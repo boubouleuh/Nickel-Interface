@@ -12,21 +12,42 @@ local ffi = require('ffi')
 local players = {}
 local playersPerms = {}
 
+local playersVehiclesTab = {}
 
 
-
+function window()
+	if windowOpen[0] then
+		windowOpen = im.BoolPtr(false)
+	else
+		windowOpen = im.BoolPtr(true)
+	end
+end
 
 
 function getPlayers(data)
-	players = jsonDecode(data)
+	if data then
+		players = jsonDecode(data)
+	end
+
 end
 
+function playersVehicles(data)
+	-- if data then
+	-- 	playersVehiclesTab = jsonDecode(data)
+	-- end
+end
 
 		-- todo Régler les bugs quand il y'a plusieurs joueurs
 
 function playersPermissions(data)
-	playersPerms = jsonDecode(data)
+	if data then
+		playersPerms = jsonDecode(data)
+	end
 end
+
+
+
+
 local inputText = ffi.new("char[?]", 100) -- Allocate memory for the C-style string
 local windowInstance = {}
 local timeElements =  {s = "seconds", m = "minutes", h = "hours", d = "days"}
@@ -131,7 +152,7 @@ local function mainWindow()
 	im.Begin("Nickel Interface")
 
 	if im.BeginTabBar("Tab") then
-        if im.BeginTabItem("Tab1") then
+        if im.BeginTabItem("Players") then
             -- Contenu de l'onglet 1
 			-- local players = MPVehicleGE.getPlayers()
 
@@ -185,6 +206,7 @@ local function mainWindow()
 					end
 
 
+					--vehicle list
 
 				end
 			end
@@ -222,7 +244,7 @@ local function onExtensionLoaded()
 	gui.registerWindow("N.I", im.ImVec2(100, 300))
 	gui.showWindow("N.I")
 	log('W', logTag, "Nickel interface LOADED")
-	if AddEventHandler then AddEventHandler("getPlayers", getPlayers) AddEventHandler("playersPermissions", playersPermissions) end --Event called serverside by the Nickel plugin
+	if AddEventHandler then AddEventHandler("getPlayers", getPlayers) AddEventHandler("playersPermissions", playersPermissions) AddEventHandler("playersVehicles", playersVehicles) AddEventHandler("window", window) end --Event called serverside by the Nickel plugin
 end
 
 local function onExtensionUnloaded()
