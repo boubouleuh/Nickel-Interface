@@ -14,7 +14,6 @@ local playersPerms = {}
 
 local playersVehiclesTab = {}
 
-
 function window()
 	if windowOpen[0] then
 		windowOpen = im.BoolPtr(false)
@@ -111,14 +110,18 @@ local function askWindow(playerName, command, timeInput)
 
 			im.SameLine()
 			if im.InputInt("", intNumber, 1) then
+				if intNumber[0] < 0 then
+					intNumber[0] = 0
+				end
 			end
-			
+
 			im.SameLine()
-			if im.BeginCombo("", timeElements[selectedKey]) then
+
+			if im.BeginCombo("\u{00A0}", timeElements[selectedKey]) then --invisible char in label because if its an empty string its not working
 				for key, value in pairs(timeElements) do
 					local isSelected = (key == selectedKey)
 					if im.Selectable1(value, isSelected) then
-						selectedKey = key	
+						selectedKey = key
 					end
 		
 					if isSelected then
@@ -143,12 +146,40 @@ local function askWindow(playerName, command, timeInput)
 			table.remove(windowInstance, listIndex)
 		end
 	im.End()
+
+	-- im.PopFont()
 end
 
 
 
 local function mainWindow()
 	gui.setupWindow("N.I")
+
+	im.PushStyleColor2(im.Col_Border, im.ImVec4(0.2, 0.2, 0.2, 1.0))
+	im.PushStyleColor2(im.Col_ResizeGrip, im.ImVec4(0.15, 0.15, 0.15, 1.0))
+	im.PushStyleColor2(im.Col_ResizeGripHovered, im.ImVec4(0.18, 0.18, 0.18, 1.0))
+	im.PushStyleColor2(im.Col_ResizeGripActive, im.ImVec4(0.2, 0.2, 0.2, 1.0))
+	im.PushStyleColor2(im.Col_TitleBg, im.ImVec4(0.25, 0.25, 0.25, 1.0))
+	im.PushStyleColor2(im.Col_TitleBgActive, im.ImVec4(0.18, 0.18, 0.18, 1.0))
+	im.PushStyleColor2(im.Col_TitleBgCollapsed, im.ImVec4(0.1, 0.1, 0.1, 1.0))
+	im.PushStyleColor2(im.Col_Tab, im.ImVec4(0.2, 0.2, 0.2, 1))
+	im.PushStyleColor2(im.Col_TabHovered, im.ImVec4(0.2, 0.2, 0.2, 0.7))
+	im.PushStyleColor2(im.Col_TabActive, im.ImVec4(0.15, 0.15, 0.15, 1.0))
+	im.PushStyleColor2(im.Col_FrameBg, im.ImVec4(0.2, 0.2, 0.2, 0.8))
+	im.PushStyleColor2(im.Col_FrameBgHovered, im.ImVec4(0.4, 0.4, 0.4, 0.5))
+	im.PushStyleColor2(im.Col_FrameBgActive, im.ImVec4(0.2, 0.2, 0.2, 0.9))
+	im.PushStyleColor2(im.Col_Header, im.ImVec4(0.2, 0.2, 0.2, 1.0))
+	im.PushStyleColor2(im.Col_HeaderHovered, im.ImVec4(0.25, 0.25, 0.25, 1.0))
+	im.PushStyleColor2(im.Col_HeaderActive, im.ImVec4(0.3, 0.3, 0.3, 1.0))
+	im.PushStyleColor2(im.Col_Separator, im.ImVec4(0.25, 0.25, 0.25, 0.75))
+	im.PushStyleColor2(im.Col_SeparatorHovered, im.ImVec4(0.3, 0.3, 0.3, 0.75))
+	im.PushStyleColor2(im.Col_SeparatorActive, im.ImVec4(0.35, 0.35, 0.35, 0.5))
+	im.PushStyleColor2(im.Col_Button, im.ImVec4(0.1, 0.1, 0.1, 1.0))
+	im.PushStyleColor2(im.Col_ButtonHovered, im.ImVec4(0.3, 0.3, 0.3, 1.0))
+	im.PushStyleColor2(im.Col_ButtonActive, im.ImVec4(0.2, 0.2, 0.2, 1.0))
+	
+	-- Changer l'alpha de la couleur de fond de la fenêtre	
+	im.SetNextWindowBgAlpha(0.777)
 	im.Begin("Nickel Interface")
 
 	if im.BeginTabBar("Tab") then
@@ -162,6 +193,13 @@ local function mainWindow()
 				if im.CollapsingHeader1("[" .. key .. "] " .. value.name) then
 					-- Contenu déroulant (options) ici
 					im.NewLine()
+
+					if playersPerms.banip then
+						im.SameLine()
+						if im.SmallButton("Banip##" .. key) then
+							askWindow(value.name, "banip", false)
+						end
+					end
 
 					if playersPerms.ban then
 						im.SameLine()
