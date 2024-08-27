@@ -1,0 +1,495 @@
+
+
+
+<div ng-app="Nickel" ng-init="init(this)" style="width: 100%; height: 100%;" class="bngApp nickel-interface">
+
+    <style>
+
+    :root {
+    --main-text-color: #A1A1A1;
+    --secondary-text-color: #202120;
+    --button-color: 32, 33, 32, 80%;
+    --main-container-color: 47, 53, 53, 80%;
+    --secondary-container-color: 38, 43, 39, 70%;
+    --main-orange-color: 242, 125, 22, 70%
+    }
+
+
+    .nickel-interface{
+        background: transparent;
+        }
+
+
+    .nickel-interface .title-bar{
+        font-weight: bold;
+        color: var(--main-text-color);
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(var(--button-color));
+        border-radius: 30px 30px 0 0;
+    }
+    .nickel-interface .server-info .info{
+        margin-top: 10px;
+        margin-left: 10px;
+        font-size: 15px;
+        color: var(--main-text-color);
+        font-weight: bold;
+    }
+    .nickel-interface .main-container .box {
+        display: flex;
+        flex-direction: column;
+        border-radius: 30px;
+        background-color: rgba(var(--secondary-container-color));
+
+    }
+
+    .nickel-interface .main-container {
+        background-color: rgba(var(--main-container-color));
+        border-radius: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        transition: 1s;
+        overflow: hidden;
+    }
+    .nickel-interface .NKclosed {
+        height: 0px !important;
+        transition: 1s;
+    }
+    .nickel-interface .player-list{
+        grid-row: 1 / 4;
+        grid-column: 2;
+        overflow-y: scroll;
+    }
+
+    .nickel-interface .player-list > :first-child {
+        margin-top: 10px;
+    }
+
+    .nickel-interface .nkplayer-button span{
+        color: var(--main-text-color);
+        align-self: center;
+        margin-left: 25%;
+        justify-self: left;
+        overflow: hidden;
+    }
+    .nickel-interface .nkplayer-button{
+        border-radius: 10px;
+        margin-top: 15px;
+        display: grid;
+        height: 33px;
+        width: 60%;
+        background-color: rgba(var(--button-color));
+        overflow: hidden;
+    }
+
+    .nickel-interface .player-icon{
+        border-radius: 20px;
+        position: absolute;
+        align-self: flex-start;
+        transform: translate(-50%, -10%);
+    }
+
+    .nickel-interface .player-status{
+        position: absolute;
+        transform: translate(20%, 140%);
+    }
+
+    .nickel-interface .top-bar-container {
+        
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        border-collapse: separate; 
+        background-color: rgba(var(--main-container-color));
+        border-radius: 15px;
+        margin-bottom: 5px;
+    }
+
+    .nickel-interface .arrow-icon{
+        transition: 500ms;
+    }
+    .nickel-interface .arrow-icon-reverse{
+        transition: 500ms;
+        transform: rotate(180deg);
+    }
+    .nickel-interface .top-bar-icon:focus{
+        box-shadow: none;
+        
+    }
+    .nickel-interface .top-bar-container img:first-child{
+        margin-left: 10px;
+    }
+    .nickel-interface .top-bar-container div:last-child{
+        margin-right: 10px;
+    }
+
+    .nickel-interface .search-icon {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: end;
+        align-self: center;
+        z-index: 10;
+    }
+    .nickel-interface .search-container {
+        display: grid;
+    }
+
+    .nickel-interface #NKsearch {
+        padding-bottom: 0;
+        padding-top: 0;
+        border-radius: 10px;
+        height: 30px;
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .nickel-interface .server-info{
+        border-right: rgba(var(--button-color));
+        border-style: none solid none none;
+        grid-row: 1;
+        grid-column: 1;
+    }
+    .nickel-interface .box::after{
+        padding-top: 20%
+    }
+    .nickel-interface .extensions{
+        margin-top: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-right: 10px;
+        row-gap: 5px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background-color: rgba(var(--button-color));
+        border-radius: 10px;
+        min-height: 40px;
+        align-self: center;
+    }
+    .nickel-interface .extensions .extension{
+        font-weight: bold;
+        color: var(--main-text-color);
+        font-size: 15px;
+        margin-left: 30px;
+        margin-bottom: 5px;
+
+    }
+    .nickel-interface .actual-infos{
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 15%;
+        row-gap: 12%;
+        align-self: center;
+    }
+    .nickel-interface .actual-infos div{
+        display: grid;
+        background-color: rgba(var(--button-color));
+        border-radius: 10px;
+        min-height: 30px;
+        max-height: 35px;
+        grid-template-rows:100%;
+        width: 100%; 
+    }
+    .nickel-interface .actual-infos div span{
+        padding-right: 5px;
+        font-size: 15px;
+        grid-row: 1;
+        grid-column: 1;
+        margin-left: 10px;
+        color: var(--main-text-color);
+        align-self: center;
+        justify-self: end;
+    }
+    .nickel-interface .button-icon{
+        z-index: 200;
+        position: absolute;
+        align-self: flex-start;
+        transform: translate(-40%, -10%);
+    }
+    .nickel-interface .top-left-icon{
+        z-index: 200;
+        position: absolute;
+        align-self: flex-start;
+        transform: translate(-40%, -30%);
+    }
+    .nickel-interface .commands{
+        border-right:#202120;
+        border-style: none solid none none;
+
+        grid-row: 2/4;
+        grid-column: 1;
+    }
+    .nickel-interface .category{
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-self: center;
+    }
+    .nickel-interface .category-title{
+        position: relative;
+        font-weight: bold;
+        font-size: 20px;
+        color: var(--secondary-text-color);
+        display: grid;
+        border-radius: 10px 10px 10px 0px;
+        justify-self: center;
+
+        grid-column: 1/3;
+        background-color: rgba(var(--main-orange-color));
+    }
+    .nickel-interface .category-title span{
+        align-self: center;
+        justify-self: center;
+    }
+
+    .nickel-interface .category-title .category-line{
+        top: 87%;
+        transform: translate(-100%);
+        position: absolute;
+        width: 10px;
+        border-style: solid none none solid;
+        border-width: 5px;
+        border-color: rgba(var(--main-orange-color));
+
+    }
+    .nickel-interface .category-content{
+        grid-column: 1/3;
+        align-self: center;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
+    }
+    .nickel-interface .command-button{
+        font-weight: bold;
+        color: var(--main-text-color);
+        border-radius: 10px;
+        margin-top: 10px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        height: 30px;
+        font-size: 15px;
+        background-color: rgba(var(--button-color));
+        width: 60%;
+    }
+
+    .nickel-interface .temp-input{
+        grid-row: 1;
+        grid-column: 1;
+        width: 40%; 
+        height: 50%;
+        align-self: center;
+        margin-left: 30%;
+        justify-self: start;
+    }
+    .nickel-interface .temp-input:hover,
+    .nickel-interface .temp-input:focus {
+        width: 60%;
+    }
+    .nickel-interface .temp-input:hover + span,
+    .nickel-interface .temp-input:focus + span{
+        display: none;
+    }
+    .nickel-interface .time{
+        grid-template-columns: 0.9fr 23px 0.2fr 23px; /* La première colonne pour l'icône, la deuxième pour l'input */
+    }
+
+    .nickel-interface .time-input{
+        padding: 0;
+        padding-left: 2px;
+        grid-row: 1;    
+        width: 100%;
+        height: 50%;
+        /* justify-self: center; */
+        align-self: center;
+    }
+    .nickel-interface .time-spacer{
+        grid-column: 1;
+        grid-row: 1;    
+        width: 100%;
+    }
+    .nickel-interface .gravity span{
+        padding-left: 40px;
+        font-size: 12px !important;
+    }
+    .nickel-interface .gravity-input{
+        grid-column: 1;
+        grid-row: 1;    
+        width: 30%; 
+        height: 50%;    
+        align-self: center;
+        margin-left: 30%;
+        justify-self: start;
+    }
+
+    .nickel-interface .wind span{
+        padding-left: 40px;
+        font-size: 12px !important;
+    }
+    .nickel-interface .wind-input{
+        grid-column: 1;
+        grid-row: 1;    
+        width: 30%; 
+        height: 50%;    
+        align-self: center;
+        margin-left: 30%;
+        justify-self: start;
+    }
+
+    .nickel-interface .wind-input:hover,
+    .nickel-interface .wind-input:focus{
+        width: 60%;
+    }
+    .nickel-interface .wind-input:hover + span,
+    .nickel-interface .wind-input:focus + span {
+        display: none;
+    }
+
+    .nickel-interface .gravity-input:hover,
+    .nickel-interface .gravity-input:focus{
+        width: 60%;
+    }
+    .nickel-interface .gravity-input:hover + span,
+    .nickel-interface .gravity-input:focus + span {
+        display: none;
+
+    }
+    .nickel-interface input[type="number"] {
+    -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+            appearance: textfield;
+    }
+    .nickel-interface input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    }
+    </style>
+    <div style="width: 100%; height: 40px;" class="top-bar-container">
+        <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="top-bar-icon">
+        <img ng-click="resizeApp()" src="/ui/modules/apps/Nickel/icons/arrow_icon.svg" alt="arrow icon" class="top-bar-icon arrow-icon">
+        
+        <div class="search-container">
+            <input type="search" name="search" id="NKsearch">
+            <img src="/ui/modules/apps/Nickel/icons/search_icon.svg" alt="search icon" class="search-icon">
+        </div>
+    </div>
+
+    <div style="width: 100%; height: 90%;" class="main-container">
+
+        <div style="width: 100%; height: 100%;" class="player-list box">
+
+            <div class="category" style="width: 90%;" ng-repeat="nkrole in nkroles" hide-category-if-empty>
+                <div class="category-title" style="width: 80%; height: 35px;">
+                    <span>{{nkrole.roleName}}</span>
+                    <div class="category-line">
+                    </div>
+                </div>
+
+                <div class="category-content" style="width: 90%">
+
+                    <div class="nkplayer-button" ng-repeat="nkplayer in nkplayers" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" >
+                        <img ng-src="{{imgSafe(nkplayer.b64img)}}" alt="icon" class="player-icon">
+
+                        
+                        <img ng-src="/ui/modules/apps/Nickel/icons/{{ nkplayer.online ? 'Online' : 'Offline' }}_icon.svg" alt="{{ nkplayer.online ? 'Online' : 'Offline' }}" class="player-status">
+                        <span>{{nkplayer.name}}</span>
+                    </div>
+    
+                </div>
+    
+
+            </div>
+           
+
+            
+        </div>
+
+        <div style="width: 100%; height: fit-content;" class="server-info box">
+            <div class="title-bar" style="width: 100%; height: 40px;">
+                    <span>Server infos</span>
+            </div>
+
+            <span class="info">Name : BeammpServer</span>
+            <span class="info">Version : {{nkserver_version}}</span>
+
+            <div class="extensions", style="width: 80%;">
+                <img src="/ui/modules/apps/Nickel/icons/Ext_icon.svg" alt="extension icon" class="top-left-icon">
+                <span class="extension">Economy</span>
+
+                <div>
+                    <span></span>
+                </div>
+                
+            </div>
+
+            <div class="actual-infos", style="width: 80%;">
+                <div class="temp">
+                    <img src="/ui/modules/apps/Nickel/icons/Temp_icon.svg" alt="icon" class="button-icon">
+                    <input class="temp-input" type="number" name="input" ng-model="game_temp" required><span>°C</span>
+                </div>
+                <div class="time">
+                    <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
+                    <div class="time-spacer"></div>
+                    <input class="time-input h-input" style="justify-self: end;" type="text" name="input" ng-model="game_time[0]" min="0" max="23"  required>
+                    <span style="grid-column: 3; margin: 0; padding:0; justify-self: start;">h</span>
+                    <input class="time-input m-input" type="text" name="input" ng-model="game_time[1]" min="0" max="59"  required> <!-- onchange="if(parseInt(this.value,10)<10 && this.value.length < 2)this.value='0'+this.value;if(this.value == '')this.value='00'" -->
+                </div>
+
+                <div class="gravity">
+                    <img src="/ui/modules/apps/Nickel/icons/Gravity_icon.svg" alt="icon" class="button-icon">
+                    <input class="gravity-input" type="text" name="input" ng-model="game_gravity" required>
+                    <span>m/s²</span>
+                </div>
+                <div class="wind">
+                    <img src="/ui/modules/apps/Nickel/icons/Wind_icon.svg" alt="icon" class="button-icon">
+                    <input class="wind-input" type="text" name="input" ng-model="game_wind"  required>
+                    <span>mph</span>
+                </div>
+                <div class="meteo">
+                    <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
+                    <input type="number" name="input" ng-model="game_meteo" min="0" max="99" required>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div style="width: 100%; min-height: fit-content; height: 100%;" class="commands box">
+            <div class="title-bar" style="width: 100%; height: 40px;">
+                <span>Commands</span>
+            </div>
+
+            <div class="category" style="width: 90%;">
+                <div class="category-title" style="width: 80%; height: 35px;">
+                    <span>Nickel</span>
+                    <div class="category-line">
+                    </div>
+                </div>
+
+
+                <div class="category-content" style="width: 90%">
+                    <div class="command-button">
+                        <span>Broadcast</span>
+                    </div>
+    
+                    <div class="command-button">
+                        <span>Countdown</span>
+                    </div>
+    
+    
+                </div>
+    
+
+            </div>
+           
+        </div>
+
+
+    </div>
+
+</div>

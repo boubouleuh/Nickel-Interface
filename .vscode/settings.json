@@ -1,0 +1,12 @@
+{
+    "Lua.diagnostics.globals": [
+        "guihooks",
+        "TriggerServerEvent",
+        "log",
+        "jsonDecode",
+        "scenetree",
+        "AddEventHandler",
+        "core_environment",
+        "be"
+    ]
+}
