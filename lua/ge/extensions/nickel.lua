@@ -11,14 +11,18 @@ local environment = {
     temperature = 0,
     time = {0, 0},
     gravity = 0,
-    wind = 0
+    wind = 0,
+    meteo = ""
 }
 local lastEnvironment = {
     temperature = 0,
     time = {0, 0},
     gravity = 0,
-    wind = 0
+    wind = 0,
+    meteo = ""
 }
+
+local weatherPresets
 
 local function updateEnvironment(newEnv)
     local hasChanged = false
@@ -83,6 +87,10 @@ function setWind(x, y, z)
    --[[  updateEnvironment({wind = {x, y, z}}) ]]
 end
 
+function setMeteo(meteo)
+    environment.meteo = meteo
+end
+
 
 function jsUpdateEnvironment()
     updateEnvironment(environment)
@@ -104,15 +112,15 @@ function getWind()
     return environment.wind
 end
 
-
+function getMeteo()
+    return environment.meteo
+end
 
 function clientSyncEnvironment()
-
-
+    core_weather.activate(environment.meteo)
     scenetree.TheLevelInfo:setTemperatureCurveC({{0, environment.temperature}, {1, environment.temperature},{0, 0}, {0, 0}, {0, 0}})
     time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2])
     core_environment.setGravity(environment.gravity)
-    print(environment.wind)
     be:queueAllObjectLua("obj:setWind(0,".. environment.wind..",0)")
     core_environment.requestState()
     core_environment.onInit()
@@ -170,10 +178,11 @@ local function initializeInterface(offset)
         log('D', "Nickel", "Initialized interface via AngularJS")
 
         TriggerServerEvent("initInterface", offset)
-
+        weatherPresets = core_weather.getPresets()
         initialized = true
     elseif initialized then
         print("already initialized")
+        guihooks.trigger('SyncWeatherPresets', weatherPresets)
         guihooks.trigger('SyncEnvironment', environment)
         guihooks.trigger("getServerValues", serverinfos)
         guihooks.trigger("getPlayers", playerlist)
@@ -194,6 +203,7 @@ local function getServerValues(data) -- Receive event with parameters
 
     guihooks.trigger("getServerValues", serverinfos)
 end
+
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
@@ -220,6 +230,15 @@ AddEventHandler("NKinsertPlayers", NKinsertPlayers) -- Add our event handler to 
 AddEventHandler("NKgetPlayers", NKgetPlayers) -- Add our event handler to the list managed by BeamMP
 
 AddEventHandler("NKgetRoles", NKgetRoles) -- Add our event handler to the list managed by BeamMP
+
+
+
+M.getTemp = getTemp
+M.getMeteo = getMeteo
+M.getWind = getWind
+M.getGravity = getGravity
+M.getTime = getTime
+M.setMeteo = setMeteo
 M.setTemp = setTemp
 M.setWind = setWind
 M.setGravity = setGravity

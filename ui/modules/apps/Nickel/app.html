@@ -11,7 +11,8 @@
     --button-color: 32, 33, 32, 80%;
     --main-container-color: 47, 53, 53, 80%;
     --secondary-container-color: 38, 43, 39, 70%;
-    --main-orange-color: 242, 125, 22, 70%
+    --main-orange-color: 242, 125, 22, 70%;
+    --dropdown-color: 45, 45, 45, 95%;
     }
 
 
@@ -194,7 +195,7 @@
         grid-template-rows:100%;
         width: 100%; 
     }
-    .nickel-interface .actual-infos div span{
+    .nickel-interface .actual-infos div > span {
         padding-right: 5px;
         font-size: 15px;
         grid-row: 1;
@@ -341,6 +342,44 @@
         justify-self: start;
     }
 
+    .nickel-interface .meteo-input{
+        display: flex;
+        grid-column: 1;
+        grid-row: 1;    
+        max-width:50%;
+        min-width: 0;
+        height: 50%;    
+        align-self: center;
+        margin-left: 30%;
+    }
+
+    .nickel-interface .meteo-input .md-select-value {
+        min-width: 0;
+        width: 100%;
+        padding-right: 0;
+        align-self: center;
+        overflow: hidden;
+        padding: 0 !important;
+    }
+
+    .nickel-interface .meteo-input .md-select-value span {
+        display: contents;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px !important;
+        width: 100%;
+    }
+
+    .nickel-interface .meteo-input .md-select-icon {
+        display: none;
+    }
+
+    md-select-menu > md-content{
+        background-color: rgba(var(--dropdown-color)) !important;
+    }
+
     .nickel-interface .wind-input:hover,
     .nickel-interface .wind-input:focus{
         width: 60%;
@@ -452,7 +491,12 @@
                 </div>
                 <div class="meteo">
                     <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
-                    <input type="number" name="input" ng-model="game_meteo" min="0" max="99" required>
+
+                
+                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input">
+                        <md-select-value>{{ game_meteo }}</md-select-value>
+                        <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
+                    </md-select>
                 </div>
             </div>
 
@@ -491,5 +535,4 @@
 
 
     </div>
-
 </div>

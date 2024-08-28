@@ -1,5 +1,3 @@
-
-
 var app = angular.module('beamng.apps')
 
 
@@ -44,6 +42,13 @@ app.directive('nickel', [function () {
       // }}}
 
       // $scope.nkroles = {0:{"roleName":"Administrator", "permlvl":3}}
+
+    $scope.hideSelectIcon = function() {
+            var icon = document.querySelector('.meteo-input .md-select-icon');
+            if (icon) {
+                icon.style.display = 'none';
+            }
+        };
     $scope.$on('getServerValues', function (event, data) {
         console.log(data)
         $scope.nkserver_version = data.server_version
@@ -63,11 +68,15 @@ app.directive('nickel', [function () {
       $scope.game_gravity = data.gravity
       console.log(data.wind)
       $scope.game_wind = data.wind
+      $scope.game_meteo = data.meteo
       if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
       if(parseInt(data.time[1],10)<10)data.time[1]='0'+data.time[1];
       $scope.game_time = data.time
 
       
+    });
+    $scope.$on('SyncWeatherPresets', function (event, data) {
+      $scope.weatherPresets = data
     });
 
     $scope.resizeApp = function() {
@@ -231,22 +240,22 @@ function registerCustomEvents($scope) {
             bngApi.engineLua('extensions.Nickel.setWind(' + newValue + ',' + newValue + ',' + newValue + ')');
         }
     });
-
+    $scope.$watch('game_meteo', function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        bngApi.engineLua('extensions.Nickel.setMeteo("' + newValue + '")')
+      }
+    }); 
 
     // run func every seconds
     setInterval(function() {
       bngApi.engineLua('extensions.Nickel.jsUpdateEnvironment()');
     }, 1000);
   
-/*     $scope.$watch('game_meteo', function(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        bngApi.engineLua('extensions.Nickel.setMeteo(' + newValue + ')')
-      }
-    });  */
+
   }
 
-
   
+
     // let tempinput = document.querySelector(".temp-input")
     // const onTempInput = (event) => {
     //   bngApi.engineLua('extensions.Nickel.setTemp(' + $scope.game_temp + ')')
