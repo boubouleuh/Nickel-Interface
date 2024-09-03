@@ -7,7 +7,9 @@
 
     :root {
     --main-text-color: #A1A1A1;
+    --tertiary-text-color: #F27D16;
     --secondary-text-color: #202120;
+    --card-color: 32, 33, 32, 95%;
     --button-color: 32, 33, 32, 80%;
     --main-container-color: 47, 53, 53, 80%;
     --secondary-container-color: 38, 43, 39, 70%;
@@ -376,6 +378,80 @@
         display: none;
     }
 
+
+    .nickel-interface .player-card{
+        align-self: center;
+        width: 80%;
+        position: absolute;
+        background-color: rgba(var(--card-color));
+        border-radius: 20px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+    }
+    .nickel-interface .player-card .player-card-box{
+        margin-right: 10px;
+        position: relative;
+        justify-self: end;
+        width: 80%;
+        border-radius: 10px;
+        background-color: rgba(var(--secondary-container-color));
+    }
+    .nickel-interface .player-card .player-card-box:first-child{
+        margin-top: 20px;    
+    }
+    .nickel-interface .player-card .player-card-ips{
+        max-height: 70px;
+    }
+    .nickel-interface .player-card .player-card-ips ul{
+        margin-left: 20px;
+        margin-top: 0px;
+        display: flex !important;
+        flex-direction: column;
+        padding: 0;
+        max-height: 70px;
+        display: block;
+        overflow-y: scroll;
+
+    }
+    .nickel-interface .player-card .player-card-ips ul li{
+        color: var(--main-text-color);
+        font-weight: bold;
+        width: fit-content;
+    }
+    .nickel-interface .player-card .player-card-history{
+        max-height: 90px;
+        margin-top: 5px;
+
+    }
+    .nickel-interface .player-card .player-card-history ul{
+        margin-left: 20px;
+        margin-top: 0px;
+        display: flex !important;
+        flex-direction: column;
+        padding: 0;
+        max-height: 90px;
+        display: block;
+        overflow-y: scroll;
+    }
+    .nickel-interface .player-card .player-card-history ul span{
+        color: var(--tertiary-text-color);
+        font-weight: bold;
+    }
+    .nickel-interface .player-card .player-card-history ul li{
+        color: var(--main-text-color);
+        font-size: 13px;
+        font-weight: bold;
+        width: fit-content;
+    }
+    .nickel-interface .player-card img{
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-60%, -20%);
+    }
+
+
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -422,6 +498,43 @@
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
+            
+            <div class="player-card">
+                <div class="player-card-ips player-card-box">
+                    <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
+                    <ul>
+                        <li>
+                            192.168.1.1
+                        </li>
+                        <li>
+                            192.168.1.1
+                        </li>
+                        <li>
+                            192.168.1.1
+                        </li>
+                        <li>
+                            192.168.1.1
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="player-card-history player-card-box">
+                    <img src="/ui/modules/apps/Nickel/icons/history_icon.svg" alt="history icon" class="history-icon">
+                    <ul>
+                        <span>Actual</span>
+                        <li>
+                            Muted for 1 hour
+                        </li>
+
+                        <span>Past</span>
+                        <li>
+                            banned for 1 week
+                        </li>
+                    </ul>
+                </div>
+               
+            </div>
+
             <div class="category" style="width: 90%;" ng-repeat="nkrole in nkroles" hide-category-if-empty>
                 <div class="category-title" style="width: 80%; height: 35px;">
                     <span>{{nkrole.roleName}}</span>
@@ -437,6 +550,9 @@
                         
                         <img ng-src="/ui/modules/apps/Nickel/icons/{{ nkplayer.online ? 'Online' : 'Offline' }}_icon.svg" alt="{{ nkplayer.online ? 'Online' : 'Offline' }}" class="player-status">
                         <span>{{nkplayer.name}}</span>
+
+
+
                     </div>
     
                 </div>
@@ -532,7 +648,5 @@
             </div>
            
         </div>
-
-
     </div>
 </div>
