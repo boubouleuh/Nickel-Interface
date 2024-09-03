@@ -451,6 +451,31 @@
         transform: translate(-60%, -20%);
     }
 
+    .nickel-interface .actions-container{
+        padding-bottom: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-self: center;
+        justify-items: center;
+        row-gap: 5px;
+    }
+    .nickel-interface .action-button{
+        width: 85px !important;
+        display: flex;
+        justify-content: center;
+        background-color: rgba(var(--main-orange-color));
+        border-radius: 10px;
+        min-height: 30px;
+        max-height: 35px;
+        grid-template-rows:100%;
+        width: 100%; 
+    }
+    .nickel-interface .action-button span{
+        font-size: 15px;
+        color: var(--secondary-text-color);
+        font-weight: bold;
+        align-self: center;
+    }
 
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
@@ -533,6 +558,27 @@
                     </ul>
                 </div>
                
+                <div class="actions-container">
+                    <div class="action-button">
+                        <span>Tempmute</span>
+                    </div>
+                    <div class="action-button">
+                        <span>Mute</span>
+                    </div>
+                    <div class="action-button">
+                        <span>Kick</span>
+                    </div>
+                    <div class="action-button">
+                        <span>Tempban</span>
+                    </div>
+                    <div class="action-button">
+                        <span>Ban</span>
+                    </div>
+                    <div class="action-button">
+                        <span>Banip</span>
+                    </div>
+
+                </div>
             </div>
 
             <div class="category" style="width: 90%;" ng-repeat="nkrole in nkroles" hide-category-if-empty>
