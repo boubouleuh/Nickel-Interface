@@ -17,6 +17,7 @@ app.directive('nickel', [function () {
   
         // Function to be called on page load 
       $scope.init = function($scope) { 
+        $scope.hideCard = true
         bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
         setTimeout(function() {
             registerCustomEvents($scope);
@@ -106,6 +107,23 @@ app.directive('nickel', [function () {
           return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
       });
     }
+
+    $scope.showPlayerCard = function(event, player) {
+      
+      const playerCard = document.querySelector(".player-card")
+
+      const buttonRect = event.target.getBoundingClientRect(); 
+      const playerCardParent = playerCard.parentElement.getBoundingClientRect();
+     
+      playerCard.style.left = '0px'; // Réinitialise avant de recalculer
+      playerCard.style.top = '0px';
+      
+      playerCard.style.left = `${buttonRect.left - playerCard.offsetWidth - playerCardParent.left}px`;
+   
+      playerCard.style.top = `${buttonRect.bottom - playerCardParent.top}px`;
+
+      $scope.hideCard = false      
+    };
 
   }]
 
@@ -251,6 +269,16 @@ function registerCustomEvents($scope) {
       bngApi.engineLua('extensions.Nickel.jsUpdateEnvironment()');
     }, 1000);
   
+
+
+    function outsideClickListener(event) {
+      // Vérifiez si le clic est en dehors de la player-card
+      if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card')) {
+          $scope.hideCard = true; // Ferme la player-card
+          $scope.$apply();
+      }
+    }
+    document.addEventListener('click', outsideClickListener);
 
   }
 
