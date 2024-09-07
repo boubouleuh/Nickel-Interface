@@ -593,7 +593,7 @@
 
                 <div class="category-content" style="width: 90%">
 
-                    <div class="nkplayer-button" ng-repeat="nkplayer in nkplayers" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,nkplayer)">
+                    <div data-bmpid="{{nkplayer.beammpid}}" class="nkplayer-button" ng-repeat="nkplayer in nkplayers" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,nkplayer)">
                         <img ng-src="{{imgSafe(nkplayer.b64img)}}" alt="icon" class="player-icon">
 
                         
