@@ -109,18 +109,12 @@ app.directive('nickel', [function () {
     }
 
     $scope.showPlayerCard = function(event, player) {
-      
       const playerCard = document.querySelector(".player-card")
-
       const buttonRect = event.target.getBoundingClientRect(); 
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
-     
-      playerCard.style.left = '0px'; // Réinitialise avant de recalculer
-      playerCard.style.top = '0px';
-      
-      playerCard.style.left = `${buttonRect.left - playerCard.offsetWidth - playerCardParent.left}px`;
-   
-      playerCard.style.top = `${buttonRect.bottom - playerCardParent.top}px`;
+
+
+      playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
 
       $scope.hideCard = false      
     };
