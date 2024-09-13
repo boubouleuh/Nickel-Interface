@@ -497,6 +497,72 @@
         font-weight: bold;
         align-self: center;
     }
+
+
+    .nickel-interface .remove-roles-content{
+        display: grid;
+        row-gap: 5px;
+    }
+
+    .nickel-interface .secondary-box{
+        display: flex;
+        flex-direction: column;
+        border-width: 2px;
+        z-index: 10000;
+        position: absolute;
+        background-color: rgba(var(--card-color));
+        border-color: rgba(var(--main-orange-color));
+        border-style: solid;
+        border-radius: 20px;
+        padding: 10px;
+    }
+
+    .nickel-interface .remove-roles-box{
+        margin-top: 10px;
+        margin-left: 60px;
+    }
+    .nickel-interface .secondary-box .role-to-remove{
+        justify-items: center;
+        display: grid;
+        grid-template-columns: 1fr 20px;
+        grid-template-rows: 1fr;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: 3px;
+        font-size: 15px;
+        background-color: rgba(var(--secondary-container-color));
+        color: var(--tertiary-text-color);
+    }
+    .nickel-interface .remove-icon{
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: flex-end;
+        position: unset !important;
+        top: unset !important;
+        left: unset !important;
+        transform: unset !important;
+    }
+    .nickel-interface .add-icon{
+        padding-top: 5px;
+        position: unset !important;
+        top: unset !important;
+        left: unset !important;
+        transform: unset !important;
+    }
+    .nickel-interface .add-roles-box{
+        transform: translate(0, 115%);
+    }
+    .nickel-interface .add-roles-box .role-to-add{
+        display: grid;
+        justify-items: center;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: 3px;
+        font-size: 15px;
+        background-color: rgba(var(--secondary-container-color));
+        color: var(--tertiary-text-color);
+    }
+
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -551,21 +617,24 @@
                 </div>
 
                 <div class="secondary-box remove-roles-box">
-                    <span class="role-to-remove">
-                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+                    <div class="remove-roles-content">
+                        <span class="role-to-remove">
+                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
-                        Administrator
-                    </span>
-                    <span class="role-to-remove">
-                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+                            Administrator
+                        </span>
+                        <span class="role-to-remove">
+                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
-                        Moderator
-                    </span>
-                    <span class="role-to-remove">
-                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+                            Moderator
+                        </span>
+                        <span class="role-to-remove">
+                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
-                        Member
-                    </span>
+                            Member
+                        </span>
+                    </div>
+                    <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon">
                     <div class="secondary-box add-roles-box">
                         <span class="role-to-add">
                             Administrator
@@ -578,6 +647,7 @@
                         </span>
                     </div>
                 </div>
+
 
                 <div class="player-card-ips player-card-box">
                     <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
