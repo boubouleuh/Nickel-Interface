@@ -81,6 +81,7 @@
         overflow: hidden;
     }
     .nickel-interface .nkplayer-button{
+        padding-right: 10px;
         border-radius: 10px;
         margin-top: 15px;
         display: grid;
@@ -262,6 +263,7 @@
 
     }
     .nickel-interface .category-content{
+        padding-left: 10px;
         grid-column: 1/3;
         align-self: center;
         display: flex;
@@ -354,7 +356,7 @@
         min-width: 0;
         height: 50%;    
         align-self: center;
-        margin-left: 30%;
+        margin-left: 33%;
     }
 
     .nickel-interface .meteo-input .md-select-value {
@@ -390,7 +392,7 @@
         border-radius: 20px;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-rows: 0.45fr 1fr 1fr 1fr;
     }
     .nickel-interface .player-card .player-card-box{
         margin-right: 10px;
@@ -479,7 +481,22 @@
         font-weight: bold;
         align-self: center;
     }
-
+    .nickel-interface .roles-button{
+        border-radius: 10px;
+        padding:3px;
+        background-color: rgba(var(--main-orange-color));
+        width: fit-content;
+        height: fit-content;
+        justify-self: start;
+        align-self: center;
+        margin-left: 10px;
+    }
+    .nickel-interface .roles-button span{
+        font-size: 15px;
+        color: var(--secondary-text-color);
+        font-weight: bold;
+        align-self: center;
+    }
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -526,8 +543,42 @@
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
-            
+    
             <div class="player-card" ng-hide="hideCard">
+
+                <div class="roles-button">
+                    <span>Roles</span>
+                </div>
+
+                <div class="secondary-box remove-roles-box">
+                    <span class="role-to-remove">
+                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+
+                        Administrator
+                    </span>
+                    <span class="role-to-remove">
+                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+
+                        Moderator
+                    </span>
+                    <span class="role-to-remove">
+                        <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+
+                        Member
+                    </span>
+                    <div class="secondary-box add-roles-box">
+                        <span class="role-to-add">
+                            Administrator
+                        </span>
+                        <span class="role-to-add">
+                            Moderator
+                        </span>
+                        <span class="role-to-add">
+                            Member
+                        </span>
+                    </div>
+                </div>
+
                 <div class="player-card-ips player-card-box">
                     <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
                     <ul>

@@ -267,7 +267,7 @@ function registerCustomEvents($scope) {
 
     function outsideClickListener(event) {
       // Vérifiez si le clic est en dehors de la player-card
-      if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card')) {
+      if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card') && !document.querySelector(".player-card").contains(event.target)) {
           $scope.hideCard = true; // Ferme la player-card
           $scope.$apply();
       }
