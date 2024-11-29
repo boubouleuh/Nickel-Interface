@@ -207,8 +207,7 @@ end
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
-
-    table.insert(playerlist, finaldata)
+    table.insert(playerlist, finaldata.beammpid, finaldata)
 end
 
 local function NKgetPlayers()

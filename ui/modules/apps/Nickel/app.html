@@ -618,26 +618,17 @@
                     <span>Roles</span>
                 </div>
 
-                <div class="secondary-box remove-roles-box">
+                <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                     <div class="remove-roles-content">
-                        <span class="role-to-remove">
+
+                        <span class="role-to-remove" ng-repeat="role in nkplayers[cardID].roles">
                             <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
-                            Administrator
-                        </span>
-                        <span class="role-to-remove">
-                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
-
-                            Moderator
-                        </span>
-                        <span class="role-to-remove">
-                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
-
-                            Member
+                            {{role.name}}
                         </span>
                     </div>
                     <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon">
-                    <div class="secondary-box add-roles-box">
+                    <div class="secondary-box add-roles-box">   <!-- add spacing between -->
                         <span class="role-to-add">
                             Administrator
                         </span>
@@ -651,7 +642,7 @@
                 </div>
 
 
-                <div class="player-card-ips player-card-box">
+                <div class="player-card-ips player-card-box"> <!-- get ips from server -->
                     <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
                     <ul>
                         <li>
@@ -669,7 +660,7 @@
                     </ul>
                 </div>
 
-                <div class="player-card-history player-card-box">
+                <div class="player-card-history player-card-box"> <!-- get punishments history from server -->
                     <img src="/ui/modules/apps/Nickel/icons/history_icon.svg" alt="history icon" class="history-icon">
                     <ul>
                         <span>Actual</span>

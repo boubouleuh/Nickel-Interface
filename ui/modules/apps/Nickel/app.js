@@ -112,8 +112,7 @@ app.directive('nickel', [function () {
       const playerCard = document.querySelector(".player-card")
       const buttonRect = event.target.getBoundingClientRect(); 
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
-
-
+      $scope.cardID = player.beammpid
       playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
 
       $scope.hideCard = false      
