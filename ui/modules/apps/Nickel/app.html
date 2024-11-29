@@ -629,14 +629,8 @@
                     </div>
                     <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon">
                     <div class="secondary-box add-roles-box">   <!-- add spacing between -->
-                        <span class="role-to-add">
-                            Administrator
-                        </span>
-                        <span class="role-to-add">
-                            Moderator
-                        </span>
-                        <span class="role-to-add">
-                            Member
+                        <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[cardID].roles)">
+                            {{nkrole.roleName}}
                         </span>
                     </div>
                 </div>

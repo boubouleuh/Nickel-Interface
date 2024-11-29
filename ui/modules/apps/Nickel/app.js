@@ -97,6 +97,11 @@ app.directive('nickel', [function () {
 
 
     }
+    $scope.roleExists = function(roleName, roles) {
+      return roles.some(function(role) {
+          return role.name === roleName;
+      });
+    };
     $scope.getHighestRole = function(roles) {
       if (roles.length === 0) {
           return null; // Handle the case where the roles array is empty
@@ -106,7 +111,7 @@ app.directive('nickel', [function () {
       return roles.reduce((highestRole, currentRole) => {
           return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
       });
-    }
+    };
 
     $scope.showPlayerCard = function(event, player) {
       const playerCard = document.querySelector(".player-card")
