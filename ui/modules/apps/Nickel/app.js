@@ -13,11 +13,12 @@ app.directive('nickel', [function () {
     replace: true,
     restrict: 'EA',
     scope: true,
-    controller: ['$scope', '$sce', function($scope, $sce) {
+    controller: ['$scope', '$timeout', '$sce', function($scope, $timeout, $sce) {
   
         // Function to be called on page load 
       $scope.init = function($scope) { 
         $scope.hideCard = true
+        $scope.hideAddRoles = true
         bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
         setTimeout(function() {
             registerCustomEvents($scope);
@@ -119,9 +120,31 @@ app.directive('nickel', [function () {
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
       $scope.cardID = player.beammpid
       playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
+      $scope.hideCard = false    
 
-      $scope.hideCard = false      
+     
+     
     };
+
+    $scope.showAddRoles = function() {
+      const addrolesbox = document.querySelector(".add-roles-box");
+      const removerolesbox = document.querySelector(".remove-roles-box");
+      
+      // Forcer le recalcul du style
+
+      const removerolesboxComputedStyle = window.getComputedStyle(removerolesbox, null);
+      const removerolesboxHeight = removerolesbox.clientHeight;
+      const paddingTop = parseFloat(removerolesboxComputedStyle.paddingTop);
+      const paddingBottom = parseFloat(removerolesboxComputedStyle.paddingBottom);
+      const removerolesboxRect = removerolesbox.getBoundingClientRect();
+      const parentRect = removerolesbox.parentElement.getBoundingClientRect();
+      const x = removerolesboxRect.left - parentRect.left + (removerolesboxRect.width / 2) - (addrolesbox.getBoundingClientRect().width / 2);
+      console.log(removerolesboxHeight, paddingBottom, paddingTop)
+      addrolesbox.style.transform = `translate(${x}px, ${removerolesboxHeight - paddingTop - paddingBottom}px)`;
+
+      $scope.hideAddRoles = false  
+
+    }
 
   }]
 
@@ -273,7 +296,12 @@ function registerCustomEvents($scope) {
       // Vérifiez si le clic est en dehors de la player-card
       if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card') && !document.querySelector(".player-card").contains(event.target)) {
           $scope.hideCard = true; // Ferme la player-card
+          $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
           $scope.$apply();
+      }
+      else if (!document.querySelector(".add-roles-box").contains(event.target)) {
+        $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
+        $scope.$apply();
       }
     }
     document.addEventListener('click', outsideClickListener);

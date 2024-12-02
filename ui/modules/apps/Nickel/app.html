@@ -543,6 +543,8 @@
         transform: unset !important;
     }
     .nickel-interface .add-icon{
+        width: fit-content;
+        margin: auto;
         padding-top: 5px;
         position: unset !important;
         top: unset !important;
@@ -552,7 +554,6 @@
     .nickel-interface .add-roles-box{
         display: grid;
         row-gap: 5px;
-        transform: translate(0, 108%);
     }
     .nickel-interface .add-roles-box .role-to-add{
         display: grid;
@@ -627,8 +628,8 @@
                             {{role.name}}
                         </span>
                     </div>
-                    <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon">
-                    <div class="secondary-box add-roles-box">   <!-- add spacing between -->
+                    <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
+                    <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
                         <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[cardID].roles)">
                             {{nkrole.roleName}}
                         </span>
