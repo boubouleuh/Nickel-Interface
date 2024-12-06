@@ -518,10 +518,13 @@
     }
 
     .nickel-interface .remove-roles-box{
-        margin-top: 10px;
-        margin-left: 60px;
+        display: grid;
+        position: relative;
+        grid-row: 1;
     }
     .nickel-interface .secondary-box .role-to-remove{
+        width: 130px;
+        max-width: 130px;
         justify-items: center;
         display: grid;
         grid-template-columns: 1fr 20px;
@@ -532,6 +535,12 @@
         font-size: 15px;
         background-color: rgba(var(--secondary-container-color));
         color: var(--tertiary-text-color);
+    }
+    .nickel-interface .roles-wrapper{
+        position: absolute;
+        display: grid;
+        margin-top: 10px;
+        margin-left: 60px;
     }
     .nickel-interface .remove-icon{
         grid-column: 2;
@@ -552,10 +561,14 @@
         transform: unset !important;
     }
     .nickel-interface .add-roles-box{
+        justify-self: center;
+        grid-row: 2 / auto;
         display: grid;
         row-gap: 5px;
     }
     .nickel-interface .add-roles-box .role-to-add{
+        width: 110px;
+        max-width: 110px;
         display: grid;
         justify-items: center;
         font-weight: 500;
@@ -619,20 +632,22 @@
                     <span>Roles</span>
                 </div>
 
-                <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
-                    <div class="remove-roles-content">
+                <div class="roles-wrapper">
+                    <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
+                        <div class="remove-roles-content">
 
-                        <span class="role-to-remove" ng-repeat="role in nkplayers[cardID].roles">
-                            <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+                            <span class="role-to-remove" ng-repeat="role in nkplayers[cardID].roles">
+                                <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
-                            {{role.name}}
-                        </span>
-                    </div>
-                    <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
-                    <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
-                        <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[cardID].roles)">
-                            {{nkrole.roleName}}
-                        </span>
+                                {{role.name}}
+                            </span>
+                            <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
+                        </div>
+                        <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
+                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[cardID].roles)">
+                                {{nkrole.roleName}}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

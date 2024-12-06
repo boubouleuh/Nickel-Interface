@@ -99,6 +99,9 @@ app.directive('nickel', [function () {
 
     }
     $scope.roleExists = function(roleName, roles) {
+      if (!Array.isArray(roles)) {
+        return false;
+      }
       return roles.some(function(role) {
           return role.name === roleName;
       });
@@ -127,23 +130,7 @@ app.directive('nickel', [function () {
     };
 
     $scope.showAddRoles = function() {
-      const addrolesbox = document.querySelector(".add-roles-box");
-      const removerolesbox = document.querySelector(".remove-roles-box");
-      
-      // Forcer le recalcul du style
-
-      const removerolesboxComputedStyle = window.getComputedStyle(removerolesbox, null);
-      const removerolesboxHeight = removerolesbox.clientHeight;
-      const paddingTop = parseFloat(removerolesboxComputedStyle.paddingTop);
-      const paddingBottom = parseFloat(removerolesboxComputedStyle.paddingBottom);
-      const removerolesboxRect = removerolesbox.getBoundingClientRect();
-      const parentRect = removerolesbox.parentElement.getBoundingClientRect();
-      const x = removerolesboxRect.left - parentRect.left + (removerolesboxRect.width / 2) - (addrolesbox.getBoundingClientRect().width / 2);
-      console.log(removerolesboxHeight, paddingBottom, paddingTop)
-      addrolesbox.style.transform = `translate(${x}px, ${removerolesboxHeight - paddingTop - paddingBottom}px)`;
-
       $scope.hideAddRoles = false  
-
     }
 
   }]
@@ -299,7 +286,7 @@ function registerCustomEvents($scope) {
           $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
           $scope.$apply();
       }
-      else if (!document.querySelector(".add-roles-box").contains(event.target)) {
+      else if (!document.querySelector(".add-roles-box").contains(event.target) && !document.querySelector(".add-icon").contains(event.target)) {
         $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
         $scope.$apply();
       }
