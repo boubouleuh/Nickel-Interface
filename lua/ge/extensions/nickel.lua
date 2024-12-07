@@ -190,17 +190,17 @@ local function initializeInterface(offset)
     end
 end
 
-local function getTableSize(t) --need to test performance
-    local count = 0
-    for _ in pairs(t) do
-        count = count + 1
-    end
-    return count
-end
+-- local function getTableSize(t) --need to test performance
+--     local count = 0
+--     for _ in pairs(t) do
+--         count = count + 1
+--     end
+--     return count
+-- end
 
 
 local function updatePlayerList()
-    TriggerServerEvent("initInterface", getTableSize(playerlist))
+    TriggerServerEvent("initInterface", #playerlist)
 end
 
 local function getServerValues(data) -- Receive event with parameters
@@ -216,7 +216,7 @@ end
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
-    table.insert(playerlist, finaldata.beammpid, finaldata)
+    table.insert(playerlist, finaldata)
 end
 
 local function NKgetPlayers()

@@ -636,7 +636,7 @@
                     <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                         <div class="remove-roles-content">
 
-                            <span class="role-to-remove" ng-repeat="role in nkplayers[cardID].roles">
+                            <span class="role-to-remove" ng-repeat="role in cardPlayer.roles">
                                 <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
 
                                 {{role.name}}
@@ -644,7 +644,7 @@
                             <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
                         </div>
                         <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
-                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[cardID].roles)">
+                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, cardPlayer.roles)">
                                 {{nkrole.roleName}}
                             </span>
                         </div>
