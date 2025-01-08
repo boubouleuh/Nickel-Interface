@@ -392,7 +392,7 @@
         border-radius: 20px;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 0.45fr 1fr 1fr 1fr;
+        grid-template-rows: 0.6fr 0.8fr 1fr 1fr;
     }
     .nickel-interface .player-card .player-card-box{
         margin-right: 10px;
@@ -628,23 +628,23 @@
     
             <div class="player-card" ng-hide="hideCard">
 
-                <div class="roles-button">
+                <div class="roles-button" ng-click="showRoles()">
                     <span>Roles</span>
                 </div>
 
-                <div class="roles-wrapper">
+                <div class="roles-wrapper" ng-hide="hideRoles">
                     <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                         <div class="remove-roles-content">
 
                             <span class="role-to-remove" ng-repeat="role in cardPlayer.roles">
-                                <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon">
+                                <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon" ng-click="removeRole(role.name, cardPlayer.name)">
 
                                 {{role.name}}
                             </span>
                             <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
                         </div>
                         <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
-                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, cardPlayer.roles)">
+                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, cardPlayer.roles)" ng-click="addRole(nkrole.roleName, cardPlayer.name)">
                                 {{nkrole.roleName}}
                             </span>
                         </div>

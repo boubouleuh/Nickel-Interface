@@ -1,3 +1,4 @@
+
 var app = angular.module('beamng.apps')
 
 
@@ -19,6 +20,7 @@ app.directive('nickel', [function () {
       $scope.init = function($scope) { 
         $scope.hideCard = true
         $scope.hideAddRoles = true
+        $scope.hideRoles = true
         bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
         setTimeout(function() {
             registerCustomEvents($scope);
@@ -129,8 +131,26 @@ app.directive('nickel', [function () {
      
     };
 
+    $scope.showRoles = function() {
+      if ($scope.hideRoles) {
+        $scope.hideRoles = false
+      }else{
+        $scope.hideRoles = true
+      }
+     
+    }
+
     $scope.showAddRoles = function() {
       $scope.hideAddRoles = false  
+    }
+
+    $scope.addRole = function(rolename, player) {
+      bngApi.engineLua(`extensions.Nickel.addRole("${rolename}", "${player}")`)
+      $scope.hideRoles = true; // Ferme la liste des rôles
+    }
+    $scope.removeRole = function(rolename, player) {
+      bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
+      $scope.hideRoles = true; // Ferme la liste des rôles
     }
 
   }]
@@ -284,7 +304,12 @@ function registerCustomEvents($scope) {
       if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card') && !document.querySelector(".player-card").contains(event.target)) {
           $scope.hideCard = true; // Ferme la player-card
           $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
+          $scope.hideRoles = true; // Ferme la liste des rôles
           $scope.$apply();
+      }
+      else if (event.target.classList.contains('player-card')){
+        $scope.hideRoles = true; // Ferme la liste des rôles
+        $scope.$apply();
       }
       else if (!document.querySelector(".add-roles-box").contains(event.target) && !document.querySelector(".add-icon").contains(event.target)) {
         $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles

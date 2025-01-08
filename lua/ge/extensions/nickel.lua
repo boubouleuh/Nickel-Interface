@@ -237,6 +237,14 @@ local function NKgetRoles(data)
 end
 
 
+local function addRole(rolename, player)
+    local data = jsonEncode({command = "grantrole", args = {rolename, player}})
+    TriggerServerEvent("runCommand", data)
+end
+local function removeRole(rolename, player)
+    local data = jsonEncode({command = "revokerole", args = {rolename, player}})
+    TriggerServerEvent("runCommand", data)
+end
 
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
@@ -247,7 +255,8 @@ AddEventHandler("NKgetPlayers", NKgetPlayers) -- Add our event handler to the li
 AddEventHandler("NKgetRoles", NKgetRoles) -- Add our event handler to the list managed by BeamMP
 
 
-
+M.addRole = addRole
+M.removeRole = removeRole
 M.getTemp = getTemp
 M.getMeteo = getMeteo
 M.getWind = getWind
