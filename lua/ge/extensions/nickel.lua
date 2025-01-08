@@ -216,6 +216,13 @@ end
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
+    --if finaldata.beammpid exist in playerlist, update it, else insert it
+    for i, v in ipairs(playerlist) do
+        if v.beammpid == finaldata.beammpid then
+            playerlist[i] = finaldata
+            return
+        end
+    end
     table.insert(playerlist, finaldata)
 end
 
