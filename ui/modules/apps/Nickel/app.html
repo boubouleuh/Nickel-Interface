@@ -79,6 +79,7 @@
         margin-left: 25%;
         justify-self: left;
         overflow: hidden;
+        max-width: -webkit-fill-available;
     }
     .nickel-interface .nkplayer-button{
         padding-right: 10px;
@@ -492,6 +493,24 @@
         margin-left: 10px;
     }
     .nickel-interface .roles-button span{
+        pointer-events: none;
+    }
+
+    .nickel-interface .anim-button{
+        transition: 500ms;
+        overflow: visible;
+    }
+
+    .nickel-interface .anim-button:hover{
+        cursor: pointer;
+        opacity: 0.9;
+        transform: scale(1.1) !important;
+        transition: 500ms;
+    }
+
+
+
+    .nickel-interface .roles-button span{
         font-size: 15px;
         color: var(--secondary-text-color);
         font-weight: bold;
@@ -628,7 +647,7 @@
     
             <div class="player-card" ng-hide="hideCard">
 
-                <div class="roles-button" ng-click="showRoles()">
+                <div class="roles-button anim-button" ng-click="showRoles()">
                     <span>Roles</span>
                 </div>
 
@@ -636,15 +655,15 @@
                     <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                         <div class="remove-roles-content">
 
-                            <span class="role-to-remove" ng-repeat="role in cardPlayer.roles">
-                                <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon" ng-click="removeRole(role.name, cardPlayer.name)">
+                            <span class="role-to-remove" ng-repeat="role in nkplayers[playerIndex].roles | orderBy: 'permlvl': true">
+                                <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon anim-button" ng-click="removeRole(role.name, nkplayers[playerIndex].name)">
 
                                 {{role.name}}
                             </span>
-                            <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon" ng-click="showAddRoles()">
+                            <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon anim-button" ng-click="showAddRoles()">
                         </div>
                         <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
-                            <span class="role-to-add" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, cardPlayer.roles)" ng-click="addRole(nkrole.roleName, cardPlayer.name)">
+                            <span class="role-to-add anim-button" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[playerIndex].roles)" ng-click="addRole(nkrole.roleName, nkplayers[playerIndex].name)">
                                 {{nkrole.roleName}}
                             </span>
                         </div>
@@ -717,7 +736,7 @@
 
                 <div class="category-content" style="width: 90%">
 
-                    <div data-bmpid="{{nkplayer.beammpid}}" class="nkplayer-button" ng-repeat="nkplayer in nkplayers" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,nkplayer)">
+                    <div data-bmpid="{{nkplayer.beammpid}}" class="nkplayer-button anim-button" ng-repeat="(index, nkplayer) in nkplayers track by nkplayer.beammpid" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,index)">
                         <img ng-src="{{imgSafe(nkplayer.b64img)}}" alt="icon" class="player-icon">
 
                         

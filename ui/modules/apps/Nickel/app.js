@@ -66,7 +66,6 @@ app.directive('nickel', [function () {
       console.log(data)
       $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
     });
-
     $scope.$on('SyncEnvironment', function (event, data) {
       $scope.game_temp = data.temperature
       $scope.game_gravity = data.gravity
@@ -119,11 +118,12 @@ app.directive('nickel', [function () {
       });
     };
 
-    $scope.showPlayerCard = function(event, player) {
+    $scope.showPlayerCard = function(event, index) {
       const playerCard = document.querySelector(".player-card")
       const buttonRect = event.target.getBoundingClientRect(); 
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
-      $scope.cardPlayer = player
+      console.log(index)
+      $scope.playerIndex = index
       playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
       $scope.hideCard = false    
 
@@ -146,11 +146,9 @@ app.directive('nickel', [function () {
 
     $scope.addRole = function(rolename, player) {
       bngApi.engineLua(`extensions.Nickel.addRole("${rolename}", "${player}")`)
-      $scope.hideRoles = true; // Ferme la liste des rôles
     }
     $scope.removeRole = function(rolename, player) {
       bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
-      $scope.hideRoles = true; // Ferme la liste des rôles
     }
 
   }]
@@ -307,7 +305,7 @@ function registerCustomEvents($scope) {
           $scope.hideRoles = true; // Ferme la liste des rôles
           $scope.$apply();
       }
-      else if (event.target.classList.contains('player-card')){
+      else if (!document.querySelector('.remove-roles-box').contains(event.target) && !event.target.classList.contains('add-roles-box') && !event.target.classList.contains('roles-button')){
         $scope.hideRoles = true; // Ferme la liste des rôles
         $scope.$apply();
       }
