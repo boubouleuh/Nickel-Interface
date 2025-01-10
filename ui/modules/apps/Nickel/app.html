@@ -777,31 +777,31 @@
             <div class="actual-infos", style="width: 80%;">
                 <div class="temp">
                     <img src="/ui/modules/apps/Nickel/icons/Temp_icon.svg" alt="icon" class="button-icon">
-                    <input class="temp-input" type="number" name="input" ng-model="game_temp" required><span>°C</span>
+                    <input class="temp-input" type="number" name="input" ng-model="game_temp" ng-disabled="!canEditEnvironment" required><span>°C</span>
                 </div>
                 <div class="time">
                     <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
                     <div class="time-spacer"></div>
-                    <input class="time-input h-input" style="justify-self: end;" type="text" name="input" ng-model="game_time[0]" min="0" max="23"  required>
+                    <input class="time-input h-input" style="justify-self: end;" type="text" name="input" ng-model="game_time[0]" min="0" max="23" ng-disabled="!canEditEnvironment" required>
                     <span style="grid-column: 3; margin: 0; padding:0; justify-self: start;">h</span>
-                    <input class="time-input m-input" type="text" name="input" ng-model="game_time[1]" min="0" max="59"  required> <!-- onchange="if(parseInt(this.value,10)<10 && this.value.length < 2)this.value='0'+this.value;if(this.value == '')this.value='00'" -->
+                    <input class="time-input m-input" type="text" name="input" ng-model="game_time[1]" min="0" max="59" ng-disabled="!canEditEnvironment" required> <!-- onchange="if(parseInt(this.value,10)<10 && this.value.length < 2)this.value='0'+this.value;if(this.value == '')this.value='00'" -->
                 </div>
 
                 <div class="gravity">
                     <img src="/ui/modules/apps/Nickel/icons/Gravity_icon.svg" alt="icon" class="button-icon">
-                    <input class="gravity-input" type="text" name="input" ng-model="game_gravity" required>
+                    <input class="gravity-input" type="text" name="input" ng-model="game_gravity" ng-disabled="!canEditEnvironment" required>
                     <span>m/s²</span>
                 </div>
                 <div class="wind">
                     <img src="/ui/modules/apps/Nickel/icons/Wind_icon.svg" alt="icon" class="button-icon">
-                    <input class="wind-input" type="text" name="input" ng-model="game_wind"  required>
+                    <input class="wind-input" type="text" name="input" ng-model="game_wind" ng-disabled="!canEditEnvironment" required>
                     <span>mph</span>
                 </div>
                 <div class="meteo">
                     <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
 
                 
-                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input">
+                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input" ng-disabled="!canEditEnvironment">
                         <md-select-value>{{ game_meteo }}</md-select-value>
                         <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
                     </md-select>

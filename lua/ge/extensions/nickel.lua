@@ -1,10 +1,11 @@
 local M = {}
 
+
 local initialized = false
 local roles = {}
 local playerlist = {}
 local serverinfos = {}
-
+local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
 
 local environment = {
@@ -124,14 +125,16 @@ function clientSyncEnvironment()
     be:queueAllObjectLua("obj:setWind(0,".. environment.wind..",0)")
     core_environment.requestState()
     core_environment.onInit()
+    TriggerServerEvent('SyncEnvironment', jsonEncode(environment))
 end
 
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
     environment = newEnv
---[[     updateEnvironment(newEnv)
- ]]end
+
+    updateEnvironment(environment)
+end
 
 
 
@@ -184,7 +187,8 @@ local function initializeInterface(offset)
         print("already initialized")
         guihooks.trigger('SyncWeatherPresets', weatherPresets)
         guihooks.trigger('SyncEnvironment', environment)
-        guihooks.trigger("getServerValues", serverinfos)
+        guihooks.trigger("NKgetServerValues", serverinfos)
+        guihooks.trigger("NKgetUserValues", self_action_perm)
         guihooks.trigger("getPlayers", playerlist)
         guihooks.trigger("getRoles", roles)
     end
@@ -203,29 +207,42 @@ local function updatePlayerList()
     TriggerServerEvent("initInterface", #playerlist)
 end
 
-local function getServerValues(data) -- Receive event with parameters
+local function NKgetServerValues(data) -- Receive event with parameters
     local finaldata = jsonDecode(data)
 
     serverinfos = finaldata
 
     log('D', "Nickel", "getServerValues called with version " .. finaldata.server_version)
 
-    guihooks.trigger("getServerValues", serverinfos)
+    guihooks.trigger("NKgetServerValues", serverinfos)
+end
+
+local function NKgetUserValues(data)
+    local finaldata = jsonDecode(data)
+
+    self_action_perm = finaldata
+    guihooks.trigger("NKgetUserValues", self_action_perm)
 end
 
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
-    --if finaldata.beammpid exist in playerlist, update it, else insert it
+    local updated = false
+
+    -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
     for i, v in ipairs(playerlist) do
-        if v.beammpid == finaldata.beammpid then
-            playerlist[i] = finaldata
-            return
+        if tostring(v.beammpid) == tostring(finaldata.beammpid) then
+            playerlist[i] = finaldata -- Mise à jour de l'entrée existante
+            updated = true
+            break
         end
     end
-    table.insert(playerlist, finaldata)
-end
 
+    -- Si le joueur n'existe pas, l'ajouter à la liste
+    if not updated then
+        table.insert(playerlist, finaldata)
+    end
+end
 local function NKgetPlayers()
     guihooks.trigger("getPlayers", playerlist)
 end
@@ -248,11 +265,12 @@ end
 
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
-AddEventHandler("NKgetServerInfos", getServerValues) -- Add our event handler to the list managed by BeamMP
-AddEventHandler("NKinsertPlayers", NKinsertPlayers) -- Add our event handler to the list managed by BeamMP
-AddEventHandler("NKgetPlayers", NKgetPlayers) -- Add our event handler to the list managed by BeamMP
+AddEventHandler("NKgetServerInfos", NKgetServerValues) 
+AddEventHandler("NKgetUserInfos", NKgetUserValues) 
+AddEventHandler("NKinsertPlayers", NKinsertPlayers) 
+AddEventHandler("NKgetPlayers", NKgetPlayers) 
 
-AddEventHandler("NKgetRoles", NKgetRoles) -- Add our event handler to the list managed by BeamMP
+AddEventHandler("NKgetRoles", NKgetRoles) -- Add our events handler to the list managed by BeamMP
 
 
 M.addRole = addRole
@@ -268,7 +286,8 @@ M.setWind = setWind
 M.setGravity = setGravity
 M.setTime = setTime
 M.jsUpdateEnvironment = jsUpdateEnvironment
-M.getServerValues = getServerValues
+M.NKgetUserValues = NKgetUserValues
+M.NKgetServerValues = NKgetServerValues
 M.updatePlayerList = updatePlayerList
 M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded

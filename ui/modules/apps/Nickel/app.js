@@ -53,7 +53,16 @@ app.directive('nickel', [function () {
                 icon.style.display = 'none';
             }
         };
-    $scope.$on('getServerValues', function (event, data) {
+
+
+    $scope.$on('NKgetUserValues', function (event, data) {
+
+      $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
+      console.log($scope.canEditEnvironment)
+    });
+
+    $scope.$on('NKgetServerValues', function (event, data) {
+        console.log("NKgetServerValues works")
         console.log(data)
         $scope.nkserver_version = data.server_version
 
@@ -117,6 +126,7 @@ app.directive('nickel', [function () {
           return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
       });
     };
+
 
     $scope.showPlayerCard = function(event, index) {
       const playerCard = document.querySelector(".player-card")
@@ -185,6 +195,13 @@ const intervalID = setInterval(function resizeCategoryLines(){
 
 }, 500);
 
+function hasAction(actionName, actions) {
+  //if action is an array
+  if (Array.isArray(actions)) {
+    return actions.includes(actionName);
+  }
+  return false;
+};
 
 function registerCustomEvents($scope) {
     // Gestion du défilement de la liste des joueurs
