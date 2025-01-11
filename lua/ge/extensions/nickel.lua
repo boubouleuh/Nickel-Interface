@@ -194,13 +194,13 @@ local function initializeInterface(offset)
     end
 end
 
--- local function getTableSize(t) --need to test performance
---     local count = 0
---     for _ in pairs(t) do
---         count = count + 1
---     end
---     return count
--- end
+
+--searchPlayer
+local function searchPlayer(search)
+    playerlist = {}
+    TriggerServerEvent("searchPlayer", search)
+
+end
 
 
 local function updatePlayerList()
@@ -289,6 +289,7 @@ M.jsUpdateEnvironment = jsUpdateEnvironment
 M.NKgetUserValues = NKgetUserValues
 M.NKgetServerValues = NKgetServerValues
 M.updatePlayerList = updatePlayerList
+M.searchPlayer = searchPlayer
 M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded

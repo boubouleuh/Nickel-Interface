@@ -215,7 +215,12 @@ function registerCustomEvents($scope) {
     // Gestion de la recherche
     let search = document.getElementById("NKsearch");
     const onsearch = () => {
-        search.value;
+      if ($scope.search === "") {
+        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+      } else{
+        bngApi.engineLua('extensions.Nickel.searchPlayer("' + $scope.search + '")');
+
+      }
     };
     search.addEventListener("keyup", onsearch);
 
