@@ -5,7 +5,6 @@ var app = angular.module('beamng.apps')
 app.config(['$compileProvider', function($compileProvider) {
 
   // Allow additional URL patterns for img src attributes
-  console.log($compileProvider.imgSrcSanitizationWhitelist())
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|local|mailto):|data:image\/(png|jpg|jpeg|gif|svg\+xml);/);}])
 
 app.directive('nickel', [function () {
@@ -58,27 +57,21 @@ app.directive('nickel', [function () {
     $scope.$on('NKgetUserValues', function (event, data) {
 
       $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
-      console.log($scope.canEditEnvironment)
     });
 
     $scope.$on('NKgetServerValues', function (event, data) {
-        console.log("NKgetServerValues works")
-        console.log(data)
         $scope.nkserver_version = data.server_version
 
     });
     $scope.$on('getPlayers', function (event, data) {
-      console.log(data)
       $scope.nkplayers = data
     });
     $scope.$on('getRoles', function (event, data) {
-      console.log(data)
       $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
     });
     $scope.$on('SyncEnvironment', function (event, data) {
       $scope.game_temp = data.temperature
       $scope.game_gravity = data.gravity
-      console.log(data.wind)
       $scope.game_wind = data.wind
       $scope.game_meteo = data.meteo
       if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
@@ -132,7 +125,6 @@ app.directive('nickel', [function () {
       const playerCard = document.querySelector(".player-card")
       const buttonRect = event.target.getBoundingClientRect(); 
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
-      console.log(index)
       $scope.playerIndex = index
       playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
       $scope.hideCard = false    
@@ -249,7 +241,6 @@ function registerCustomEvents($scope) {
     function handleNumericInput(inputElement, scopeVariable) {
       inputElement.addEventListener("input", function() {
           let value = this.value;
-          console.log($scope[scopeVariable])
           // Permettre uniquement les chiffres, les points décimaux et le signe négatif si autorisé
           value = value.replace(/[^0-9.-]/g, '')
   

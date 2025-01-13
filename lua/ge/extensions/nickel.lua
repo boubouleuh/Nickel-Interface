@@ -4,6 +4,9 @@ local M = {}
 local initialized = false
 local roles = {}
 local playerlist = {}
+local searchPlayerlist = {}
+local isSearching = false
+
 local serverinfos = {}
 local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
@@ -24,6 +27,12 @@ local lastEnvironment = {
 }
 
 local weatherPresets
+
+
+local function resetSearch()
+    searchPlayerlist = {}
+end
+
 
 local function updateEnvironment(newEnv)
     local hasChanged = false
@@ -177,9 +186,10 @@ function formatTimeOfDay(value)
 end
 
 local function initializeInterface(offset)
+    isSearching = false
+    searchPlayerlist = {}
     if not initialized then
         log('D', "Nickel", "Initialized interface via AngularJS")
-
         TriggerServerEvent("initInterface", offset)
         weatherPresets = core_weather.getPresets()
         initialized = true
@@ -197,9 +207,9 @@ end
 
 --searchPlayer
 local function searchPlayer(search)
-    playerlist = {}
+    isSearching = true
+    searchPlayerlist = {}
     TriggerServerEvent("searchPlayer", search)
-
 end
 
 
@@ -224,15 +234,15 @@ local function NKgetUserValues(data)
     guihooks.trigger("NKgetUserValues", self_action_perm)
 end
 
-
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
     local updated = false
+    local list = isSearching and searchPlayerlist or playerlist
 
     -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
-    for i, v in ipairs(playerlist) do
+    for i, v in ipairs(list) do
         if tostring(v.beammpid) == tostring(finaldata.beammpid) then
-            playerlist[i] = finaldata -- Mise à jour de l'entrée existante
+            list[i] = finaldata -- Mise à jour de l'entrée existante
             updated = true
             break
         end
@@ -240,11 +250,13 @@ local function NKinsertPlayers(data)
 
     -- Si le joueur n'existe pas, l'ajouter à la liste
     if not updated then
-        table.insert(playerlist, finaldata)
+        table.insert(list, finaldata)
     end
 end
+
 local function NKgetPlayers()
-    guihooks.trigger("getPlayers", playerlist)
+    local list = isSearching and searchPlayerlist or playerlist
+    guihooks.trigger("getPlayers", list)
 end
 
 local function NKgetRoles(data)
@@ -269,7 +281,7 @@ AddEventHandler("NKgetServerInfos", NKgetServerValues)
 AddEventHandler("NKgetUserInfos", NKgetUserValues) 
 AddEventHandler("NKinsertPlayers", NKinsertPlayers) 
 AddEventHandler("NKgetPlayers", NKgetPlayers) 
-
+AddEventHandler("NKResetSearch", resetSearch)
 AddEventHandler("NKgetRoles", NKgetRoles) -- Add our events handler to the list managed by BeamMP
 
 
@@ -286,10 +298,12 @@ M.setWind = setWind
 M.setGravity = setGravity
 M.setTime = setTime
 M.jsUpdateEnvironment = jsUpdateEnvironment
+M.emptyPlayerList = emptyPlayerList
 M.NKgetUserValues = NKgetUserValues
 M.NKgetServerValues = NKgetServerValues
 M.updatePlayerList = updatePlayerList
 M.searchPlayer = searchPlayer
+M.resetSearch = resetSearch
 M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
