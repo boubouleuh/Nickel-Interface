@@ -33,6 +33,10 @@ local function resetSearch()
     searchPlayerlist = {}
 end
 
+local function resetPlayerList()
+    playerlist = {}
+end
+
 
 local function updateEnvironment(newEnv)
     local hasChanged = false
@@ -282,6 +286,7 @@ AddEventHandler("NKgetUserInfos", NKgetUserValues)
 AddEventHandler("NKinsertPlayers", NKinsertPlayers) 
 AddEventHandler("NKgetPlayers", NKgetPlayers) 
 AddEventHandler("NKResetSearch", resetSearch)
+AddEventHandler("NKResetPlayerList", resetPlayerList)
 AddEventHandler("NKgetRoles", NKgetRoles) -- Add our events handler to the list managed by BeamMP
 
 
@@ -304,6 +309,7 @@ M.NKgetServerValues = NKgetServerValues
 M.updatePlayerList = updatePlayerList
 M.searchPlayer = searchPlayer
 M.resetSearch = resetSearch
+M.resetPlayerList = resetPlayerList
 M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded

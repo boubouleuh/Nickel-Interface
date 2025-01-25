@@ -7,6 +7,24 @@ app.config(['$compileProvider', function($compileProvider) {
   // Allow additional URL patterns for img src attributes
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|local|mailto):|data:image\/(png|jpg|jpeg|gif|svg\+xml);/);}])
 
+app.filter('unique', function() {
+    return function(items) {
+        if (!items) return [];
+        let uniqueItems = [];
+        let seenItems = new Set();
+        if (Array.isArray(items)) {
+          items.forEach(item => {
+              if (!seenItems.has(item)) {
+                  seenItems.add(item);
+                  uniqueItems.push(item);
+              }
+          });
+        }
+        return uniqueItems;
+    };
+});
+
+
 app.directive('nickel', [function () {
   return {
     templateUrl:  '/ui/modules/apps/Nickel/app.html',
@@ -55,7 +73,7 @@ app.directive('nickel', [function () {
 
 
     $scope.$on('NKgetUserValues', function (event, data) {
-
+      console.log(data)      
       $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
     });
 
@@ -65,6 +83,7 @@ app.directive('nickel', [function () {
     });
     $scope.$on('getPlayers', function (event, data) {
       $scope.nkplayers = data
+      console.log(data)
     });
     $scope.$on('getRoles', function (event, data) {
       $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 

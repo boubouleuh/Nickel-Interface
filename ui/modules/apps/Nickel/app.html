@@ -655,7 +655,7 @@
                     <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                         <div class="remove-roles-content">
 
-                            <span class="role-to-remove" ng-repeat="role in nkplayers[playerIndex].roles | orderBy: 'permlvl': true">
+                            <span class="role-to-remove" ng-repeat="role in nkplayers[playerIndex].roles track by role.name | orderBy: 'permlvl': true">
                                 <img src="/ui/modules/apps/Nickel/icons/remove_icon.svg" alt="remove icon" class="remove-icon anim-button" ng-click="removeRole(role.name, nkplayers[playerIndex].name)">
 
                                 {{role.name}}
@@ -674,17 +674,8 @@
                 <div class="player-card-ips player-card-box"> <!-- get ips from server -->
                     <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
                     <ul>
-                        <li>
-                            192.168.1.1
-                        </li>
-                        <li>
-                            192.168.1.1
-                        </li>
-                        <li>
-                            192.168.1.1
-                        </li>
-                        <li>
-                            192.168.1.1
+                        <li ng-repeat="ip in nkplayers[playerIndex].ips | unique track by $index">
+                            {{ip}}
                         </li>
                     </ul>
                 </div>
