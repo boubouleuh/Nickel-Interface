@@ -207,11 +207,12 @@ const intervalID = setInterval(function resizeCategoryLines(){
 }, 500);
 
 function hasAction(actionName, actions) {
-  //if action is an array
+  //work on array and objects
   if (Array.isArray(actions)) {
     return actions.includes(actionName);
+  } else if (typeof actions === 'object') {
+    return actions[actionName];
   }
-  return false;
 };
 
 function registerCustomEvents($scope) {

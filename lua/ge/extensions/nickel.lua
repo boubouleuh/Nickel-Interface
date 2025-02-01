@@ -233,7 +233,6 @@ end
 
 local function NKgetUserValues(data)
     local finaldata = jsonDecode(data)
-
     self_action_perm = finaldata
     guihooks.trigger("NKgetUserValues", self_action_perm)
 end
