@@ -695,26 +695,11 @@
                     </ul>
                 </div>
                
+                <!-- ng-click="sendCommand(command, nkplayers[playerIndex].beammpid)" -->
                 <div class="actions-container">
-                    <div class="action-button">
-                        <span>Tempmute</span>
+                    <div class="action-button" ng-repeat="command in user_commands">
+                        <span>command.name</span>
                     </div>
-                    <div class="action-button">
-                        <span>Mute</span>
-                    </div>
-                    <div class="action-button">
-                        <span>Kick</span>
-                    </div>
-                    <div class="action-button">
-                        <span>Tempban</span>
-                    </div>
-                    <div class="action-button">
-                        <span>Ban</span>
-                    </div>
-                    <div class="action-button">
-                        <span>Banip</span>
-                    </div>
-
                 </div>
             </div>
 

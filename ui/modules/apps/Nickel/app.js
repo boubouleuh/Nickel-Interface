@@ -71,7 +71,10 @@ app.directive('nickel', [function () {
             }
         };
 
-
+    $scope.$on('getUserCommands', function (event, data) {
+        console.log("triggered getUserCommands", data)
+        $scope.user_commands = data
+    });
     $scope.$on('NKgetUserValues', function (event, data) {
       console.log(data)      
       $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)

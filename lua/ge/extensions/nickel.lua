@@ -237,6 +237,12 @@ local function NKgetUserValues(data)
     guihooks.trigger("NKgetUserValues", self_action_perm)
 end
 
+local function getUserCommands(data)
+    local finaldata = jsonDecode(data)
+    print("triggering getUserCommands")
+    guihooks.trigger("getUserCommands", finaldata)
+end
+
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
     local updated = false
@@ -286,9 +292,10 @@ AddEventHandler("NKinsertPlayers", NKinsertPlayers)
 AddEventHandler("NKgetPlayers", NKgetPlayers) 
 AddEventHandler("NKResetSearch", resetSearch)
 AddEventHandler("NKResetPlayerList", resetPlayerList)
-AddEventHandler("NKgetRoles", NKgetRoles) -- Add our events handler to the list managed by BeamMP
+AddEventHandler("NKgetRoles", NKgetRoles) 
+AddEventHandler("NKgetUserCommands", getUserCommands) -- Add our events handler to the list managed by BeamMP
 
-
+M.getUserCommands = getUserCommands
 M.addRole = addRole
 M.removeRole = removeRole
 M.getTemp = getTemp
