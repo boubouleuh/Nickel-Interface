@@ -10,7 +10,7 @@ local isSearching = false
 local serverinfos = {}
 local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
-
+local usercommands = {}
 local environment = {
     temperature = 0,
     time = {0, 0},
@@ -159,6 +159,7 @@ local function onExtensionUnloaded()
     log('D', "Nickel", "Unloaded")
 end
 
+
 local function onWorldReadyState(state)
     if state == 2 then
         log('D', "Nickel", "Nickel interface ready in this instance")
@@ -205,6 +206,7 @@ local function initializeInterface(offset)
         guihooks.trigger("NKgetUserValues", self_action_perm)
         guihooks.trigger("getPlayers", playerlist)
         guihooks.trigger("getRoles", roles)
+        guihooks.trigger("NKgetUserCommands", usercommands)
     end
 end
 
@@ -239,8 +241,9 @@ end
 
 local function getUserCommands(data)
     local finaldata = jsonDecode(data)
+    usercommands = finaldata
     print("triggering getUserCommands")
-    guihooks.trigger("getUserCommands", finaldata)
+    guihooks.trigger("NKgetUserCommands", usercommands)
 end
 
 local function NKinsertPlayers(data)
@@ -284,6 +287,11 @@ local function removeRole(rolename, player)
     TriggerServerEvent("runCommand", data)
 end
 
+local function sendUserCommand(command, args)
+    local data = jsonEncode({command = command, args = args})
+    TriggerServerEvent("runCommand", data)
+end
+
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
 AddEventHandler("NKgetServerInfos", NKgetServerValues) 
@@ -295,6 +303,7 @@ AddEventHandler("NKResetPlayerList", resetPlayerList)
 AddEventHandler("NKgetRoles", NKgetRoles) 
 AddEventHandler("NKgetUserCommands", getUserCommands) -- Add our events handler to the list managed by BeamMP
 
+M.sendUserCommand = sendUserCommand
 M.getUserCommands = getUserCommands
 M.addRole = addRole
 M.removeRole = removeRole

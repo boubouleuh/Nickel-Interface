@@ -25,6 +25,40 @@ app.filter('unique', function() {
 });
 
 
+app.directive('clickOutside', ['$document', function($document) {
+  return {
+    restrict: 'A',
+    scope: {
+      clickOutside: '&',
+      clickOutsideExceptions: '@' // liste de classes séparées par des virgules
+    },
+    link: function(scope, element) {
+      function onClick(event) {
+        const exceptions = scope.clickOutsideExceptions
+          ? scope.clickOutsideExceptions.split(',').map(cls => cls.trim())
+          : [];
+
+        // Vérifie si l'élément cliqué ou un de ses parents contient une des classes exception
+        const isException = exceptions.some(className =>
+          event.target.closest('.' + className)
+        );
+
+        if (!element[0].contains(event.target) && !isException) {
+          scope.$apply(() => {
+            scope.$eval(scope.clickOutside);
+          });
+        }
+      }
+
+      $document.on('click', onClick);
+
+      scope.$on('$destroy', function() {
+        $document.off('click', onClick);
+      });
+    }
+  };
+}]);
+
 app.directive('nickel', [function () {
   return {
     templateUrl:  '/ui/modules/apps/Nickel/app.html',
@@ -38,6 +72,7 @@ app.directive('nickel', [function () {
         $scope.hideCard = true
         $scope.hideAddRoles = true
         $scope.hideRoles = true
+        $scope.hideUserCommandInputs = true
         bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
         setTimeout(function() {
             registerCustomEvents($scope);
@@ -71,9 +106,10 @@ app.directive('nickel', [function () {
             }
         };
 
-    $scope.$on('getUserCommands', function (event, data) {
-        console.log("triggered getUserCommands", data)
+    $scope.$on('NKgetUserCommands', function (event, data) {
+        console.log("triggered NKgetUserCommands", data)
         $scope.user_commands = data
+        console.log($scope.user_commands)
     });
     $scope.$on('NKgetUserValues', function (event, data) {
       console.log(data)      
@@ -144,13 +180,15 @@ app.directive('nickel', [function () {
 
 
     $scope.showPlayerCard = function(event, index) {
+      if (!$scope.hideCard && $scope.playerIndex === index) {
+        return
+      }
       const playerCard = document.querySelector(".player-card")
       const buttonRect = event.target.getBoundingClientRect(); 
       const playerCardParent = playerCard.parentElement.getBoundingClientRect();
       $scope.playerIndex = index
       playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
-      $scope.hideCard = false    
-
+      $scope.hideCard = false  
      
      
     };
@@ -163,6 +201,30 @@ app.directive('nickel', [function () {
       }
      
     }
+
+    $scope.selectUserCommand = function(commandName) {
+      $scope.hideUserCommandInputs = false;
+      $scope.selectedUserCommand = $scope.user_commands[commandName];
+      $scope.selectedUserCommand.name = commandName;
+      $scope.usercommandArgs = {};
+      // Ignore the first argument (playername)
+      $scope.selectedUserCommand.args.slice(1).forEach(arg => {
+        $scope.usercommandArgs[arg.name] = '';
+      });
+    };
+  
+
+    $scope.sendUserCommand = function(commandName) {
+      const command = $scope.user_commands[commandName];
+      const args = $scope.usercommandArgs;
+      let argsString = '';
+      // Ignore the first argument (playername)
+      command.args.slice(1).forEach(arg => {
+        argsString += `"${args[arg.name]}", `;
+      });
+      argsString = argsString.slice(0, -2); // Remove the trailing comma and space
+      bngApi.engineLua(`extensions.Nickel.sendUserCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
+    };
 
     $scope.showAddRoles = function() {
       $scope.hideAddRoles = false  
@@ -331,26 +393,6 @@ function registerCustomEvents($scope) {
       bngApi.engineLua('extensions.Nickel.jsUpdateEnvironment()');
     }, 1000);
   
-
-
-    function outsideClickListener(event) {
-      // Vérifiez si le clic est en dehors de la player-card
-      if (!event.target.classList.contains('nkplayer-button') && !event.target.classList.contains('player-card') && !document.querySelector(".player-card").contains(event.target)) {
-          $scope.hideCard = true; // Ferme la player-card
-          $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
-          $scope.hideRoles = true; // Ferme la liste des rôles
-          $scope.$apply();
-      }
-      else if (!document.querySelector('.remove-roles-box').contains(event.target) && !event.target.classList.contains('add-roles-box') && !event.target.classList.contains('roles-button')){
-        $scope.hideRoles = true; // Ferme la liste des rôles
-        $scope.$apply();
-      }
-      else if (!document.querySelector(".add-roles-box").contains(event.target) && !document.querySelector(".add-icon").contains(event.target)) {
-        $scope.hideAddRoles = true; // Ferme la boîte de dialogue pour ajouter des rôles
-        $scope.$apply();
-      }
-    }
-    document.addEventListener('click', outsideClickListener);
 
   }
 

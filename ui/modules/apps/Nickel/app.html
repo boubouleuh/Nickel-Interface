@@ -393,7 +393,8 @@
         border-radius: 20px;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 0.6fr 0.8fr 1fr 1fr;
+        grid-template-rows: repeat(auto-fill,50px);
+        grid-gap: 20px;
     }
     .nickel-interface .player-card .player-card-box{
         margin-right: 10px;
@@ -598,6 +599,29 @@
         color: var(--tertiary-text-color);
     }
 
+    .nickel-interface .usercommand-inputs{
+        z-index: 10000;
+        padding: 10px;
+        border-radius: 10px;
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        max-width: 80%;
+        background-color: rgba(var(--card-color));
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .nickel-interface .usercommand-arg{
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    .nickel-interface .usercommand-inputs button{
+        align-self: center;
+        width: fit-content;
+    }
+
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -640,18 +664,27 @@
         </div>
     </div>
 
+    <div class="usercommand-inputs" ng-hide="hideUserCommandInputs" click-outside="hideUserCommandInputs = true" click-outside-exceptions="action-button">
+        <div class="usercommand-arg" ng-repeat="arg in selectedUserCommand.args.slice(1)">
+          <label>{{arg.name}} ({{arg.type}}):</label>
+          <input type="text" ng-model="usercommandArgs[arg.name]" ng-if="arg.type === 'string'" />
+          <!-- Ajoutez d'autres types d'arguments ici -->
+        </div>
+        <button ng-click="sendUserCommand(selectedUserCommand.name)">Send Command</button>
+    </div>
+
     <div style="width: 100%; height: 90%;" class="main-container">
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
     
-            <div class="player-card" ng-hide="hideCard">
+            <div class="player-card" ng-hide="hideCard" click-outside="hideCard = true" click-outside-exceptions="nkplayer-button, action-button, roles-button, remove-roles-box, add-roles-box">
 
                 <div class="roles-button anim-button" ng-click="showRoles()">
                     <span>Roles</span>
                 </div>
 
-                <div class="roles-wrapper" ng-hide="hideRoles">
+                <div class="roles-wrapper" ng-hide="hideRoles" click-outside="hideRoles = true" click-outside-exceptions="roles-button">
                     <div class="secondary-box remove-roles-box">    <!-- get roles from server -->
                         <div class="remove-roles-content">
 
@@ -662,8 +695,8 @@
                             </span>
                             <img src="/ui/modules/apps/Nickel/icons/add_icon.svg" alt="add icon" class="add-icon anim-button" ng-click="showAddRoles()">
                         </div>
-                        <div class="secondary-box add-roles-box" ng-hide="hideAddRoles">   <!-- add spacing between -->
-                            <span class="role-to-add anim-button" ng-repeat="nkrole in nkroles" ng-if="!roleExists(nkrole.roleName, nkplayers[playerIndex].roles)" ng-click="addRole(nkrole.roleName, nkplayers[playerIndex].name)">
+                        <div class="secondary-box add-roles-box" ng-hide="hideAddRoles" click-outside="hideAddRoles = true" click-outside-exceptions="add-icon">   <!-- add spacing between -->
+                            <span class="role-to-add anim-button" ng-repeat="nkrole in nkroles track by nkrole.roleName" ng-if="!roleExists(nkrole.roleName, nkplayers[playerIndex].roles)" ng-click="addRole(nkrole.roleName, nkplayers[playerIndex].name)">
                                 {{nkrole.roleName}}
                             </span>
                         </div>
@@ -695,15 +728,15 @@
                     </ul>
                 </div>
                
-                <!-- ng-click="sendCommand(command, nkplayers[playerIndex].beammpid)" -->
+                <!-- ng-click="sendCommand(command)" -->
                 <div class="actions-container">
-                    <div class="action-button" ng-repeat="command in user_commands">
-                        <span>command.name</span>
+                    <div class="action-button anim-button" ng-click="selectUserCommand(index)" ng-repeat="(index, command) in user_commands">
+                        <span>{{index}}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="category" style="width: 90%;" ng-repeat="nkrole in nkroles" hide-category-if-empty>
+            <div class="category" style="width: 90%;" ng-repeat="nkrole in nkroles track by nkrole.roleName" hide-category-if-empty>
                 <div class="category-title" style="width: 80%; height: 35px;">
                     <span>{{nkrole.roleName}}</span>
                     <div class="category-line">
