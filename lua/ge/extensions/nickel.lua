@@ -33,9 +33,6 @@ local function resetSearch()
     searchPlayerlist = {}
 end
 
-local function resetPlayerList()
-    playerlist = {}
-end
 
 
 local function updateEnvironment(newEnv)
@@ -208,6 +205,12 @@ local function initializeInterface(offset)
         guihooks.trigger("getRoles", roles)
         guihooks.trigger("NKgetUserCommands", usercommands)
     end
+end
+
+local function resetPlayerList()
+    playerlist = {}
+    initialized = false
+    initializeInterface(0)
 end
 
 
