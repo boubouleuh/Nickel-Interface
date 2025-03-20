@@ -237,6 +237,11 @@ app.directive('nickel', [function () {
       bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
     }
 
+    $scope.capitalizeFirstLetter = function(str) {
+      if (!str) return str;
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
   }]
 
   }

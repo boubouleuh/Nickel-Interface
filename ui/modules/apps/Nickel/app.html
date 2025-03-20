@@ -618,8 +618,15 @@
         flex-direction: column;
     }
     .nickel-interface .usercommand-inputs button{
+        border-radius: 10px;
+        margin-top: 5px;
+        padding: 5px 15px;
+        font-weight: bold;
+        background-color: rgba(var(--main-orange-color));
         align-self: center;
         width: fit-content;
+        border: none;
+        color: var(--secondary-text-color);
     }
 
     md-select-menu > md-content{
@@ -666,8 +673,7 @@
 
     <div class="usercommand-inputs" ng-hide="hideUserCommandInputs" click-outside="hideUserCommandInputs = true" click-outside-exceptions="action-button">
         <div class="usercommand-arg" ng-repeat="arg in selectedUserCommand.args.slice(1)">
-          <label>{{arg.name}} ({{arg.type}}):</label>
-          <input type="text" ng-model="usercommandArgs[arg.name]" ng-if="arg.type === 'string'" />
+          <input type="text" placeholder="{{capitalizeFirstLetter(arg.name)}} ({{arg.type}})" ng-model="usercommandArgs[arg.name]" ng-if="arg.type === 'string'" />
           <!-- Ajoutez d'autres types d'arguments ici -->
         </div>
         <button ng-click="sendUserCommand(selectedUserCommand.name)">Send Command</button>
