@@ -209,6 +209,7 @@ end
 
 local function resetPlayerList()
     playerlist = {}
+    usercommands = {}
     initialized = false
     initializeInterface(0)
 end

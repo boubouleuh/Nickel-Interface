@@ -242,6 +242,11 @@ app.directive('nickel', [function () {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    $scope.hasActiveStatus = function(player) {
+      return player.status.some(function(status) {
+          return status.status_value === 1;
+      });
+  };
   }]
 
   }

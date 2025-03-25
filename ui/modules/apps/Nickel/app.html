@@ -580,6 +580,11 @@
         left: unset !important;
         transform: unset !important;
     }
+    .nickel-interface .warning-icon{
+        position: absolute;
+        left: 65%;
+        transform: translate(130%,25%);
+    }
     .nickel-interface .add-roles-box{
         justify-self: center;
         grid-row: 2 / auto;
@@ -710,7 +715,8 @@
                 </div>
 
 
-                <div class="player-card-ips player-card-box"> <!-- get ips from server -->
+                
+                <div class="player-card-ips player-card-box" ng-if="nkplayers[playerIndex].ips.length > 0"> <!-- get ips from server -->
                     <img src="/ui/modules/apps/Nickel/icons/loc_icon.svg" alt="location icon" class="location-icon">
                     <ul>
                         <li ng-repeat="ip in nkplayers[playerIndex].ips | unique track by $index">
@@ -723,13 +729,19 @@
                     <img src="/ui/modules/apps/Nickel/icons/history_icon.svg" alt="history icon" class="history-icon">
                     <ul>
                         <span>Actual</span>
-                        <li>
-                            Muted for 1 hour
+                        <li ng-repeat="status in nkplayers[playerIndex].status | filter:{status_value: 1} track by $index">
+                            {{status.status_type}} for {{status.reason}}
                         </li>
-
+                        <li ng-if="(nkplayers[playerIndex].status | filter:{status_value: 1}).length === 0">
+                            Nothing to see here
+                        </li>
+                
                         <span>Past</span>
-                        <li>
-                            banned for 1 week
+                        <li ng-repeat="status in nkplayers[playerIndex].status | filter:{status_value: 0} track by $index">
+                            {{status.status_type}} for {{status.reason}}
+                        </li>
+                        <li ng-if="(nkplayers[playerIndex].status | filter:{status_value: 0}).length === 0">
+                            Nothing to see here
                         </li>
                     </ul>
                 </div>
@@ -759,6 +771,7 @@
                         <span>{{nkplayer.name}}</span>
 
 
+                        <img src="/ui/modules/apps/Nickel/icons/warning_icon.svg" alt="warning icon" class="warning-icon" ng-if="hasActiveStatus(nkplayer)">
 
                     </div>
     
