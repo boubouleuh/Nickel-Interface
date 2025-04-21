@@ -1,7 +1,7 @@
 
 
 
-<div ng-app="Nickel" ng-init="init(this)" style="width: 100%; height: 100%;" class="bngApp nickel-interface">
+<div ng-app="Nickel" style="width: 100%; height: 100%;" class="bngApp nickel-interface">
 
     <style>
 
@@ -254,7 +254,7 @@
     }
 
     .nickel-interface .category-title .category-line{
-        top: 87%;
+        top: 86%;
         transform: translate(-100%);
         position: absolute;
         width: 10px;
@@ -582,8 +582,7 @@
     }
     .nickel-interface .warning-icon{
         position: absolute;
-        left: 65%;
-        transform: translate(130%,25%);
+        transform: translate(140px, 25%);
     }
     .nickel-interface .add-roles-box{
         justify-self: center;
@@ -604,7 +603,7 @@
         color: var(--tertiary-text-color);
     }
 
-    .nickel-interface .usercommand-inputs{
+    .nickel-interface .command-inputs{
         z-index: 10000;
         padding: 10px;
         border-radius: 10px;
@@ -617,12 +616,12 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
-    .nickel-interface .usercommand-arg{
+    .nickel-interface .command-arg{
         margin-bottom: 5px;
         display: flex;
         flex-direction: column;
     }
-    .nickel-interface .usercommand-inputs button{
+    .nickel-interface .command-inputs button{
         border-radius: 10px;
         margin-top: 5px;
         padding: 5px 15px;
@@ -676,13 +675,24 @@
         </div>
     </div>
 
-    <div class="usercommand-inputs" ng-hide="hideUserCommandInputs" click-outside="hideUserCommandInputs = true" click-outside-exceptions="action-button">
-        <div class="usercommand-arg" ng-repeat="arg in selectedUserCommand.args.slice(1)">
-          <input type="text" placeholder="{{capitalizeFirstLetter(arg.name)}} ({{arg.type}})" ng-model="usercommandArgs[arg.name]" ng-if="arg.type === 'string'" />
-          <!-- Ajoutez d'autres types d'arguments ici -->
-        </div>
-        <button ng-click="sendUserCommand(selectedUserCommand.name)">Send Command</button>
-    </div>
+    <command-inputs 
+        ng-hide="hideUserCommandInputs" 
+        on-click-outside="hideUserCommandInputs = true" 
+        click-outside-exceptions="action-button"
+        command="selectedUserCommand" 
+        args-model="usercommandArgs" 
+        send-command="sendUserCommand(commandName)">
+    </command-inputs>
+
+    <command-inputs 
+        ng-hide="hideGlobalCommandInputs" 
+        on-click-outside="hideGlobalCommandInputs = true" 
+        click-outside-exceptions="action-button"
+        command="selectedGlobalCommand" 
+        args-model="globalcommandArgs" 
+        send-command="sendGlobalCommand(commandName)">
+    </command-inputs>
+    <!-- TODO : add global command inputs -->
 
     <div style="width: 100%; height: 90%;" class="main-container">
 
@@ -729,18 +739,18 @@
                     <img src="/ui/modules/apps/Nickel/icons/history_icon.svg" alt="history icon" class="history-icon">
                     <ul>
                         <span>Actual</span>
-                        <li ng-repeat="status in nkplayers[playerIndex].status | filter:{status_value: 1} track by $index">
+                        <li ng-repeat="(key, status) in nkplayers[playerIndex].status track by key" ng-if="status.status_value === 1">
                             {{status.status_type}} for {{status.reason}}
                         </li>
-                        <li ng-if="(nkplayers[playerIndex].status | filter:{status_value: 1}).length === 0">
+                        <li ng-if="nkplayers[playerIndex].status || (Object.keys(nkplayers[playerIndex].status | filter:{status_value: 1}).length === 0)">
                             Nothing to see here
                         </li>
                 
                         <span>Past</span>
-                        <li ng-repeat="status in nkplayers[playerIndex].status | filter:{status_value: 0} track by $index">
+                        <li ng-repeat="(key, status) in nkplayers[playerIndex].status track by key" ng-if="status.status_value === 0">
                             {{status.status_type}} for {{status.reason}}
                         </li>
-                        <li ng-if="(nkplayers[playerIndex].status | filter:{status_value: 0}).length === 0">
+                        <li ng-if="nkplayers[playerIndex].status || (Object.keys(nkplayers[playerIndex].status | filter:{status_value: 0}).length === 0)">
                             Nothing to see here
                         </li>
                     </ul>
@@ -843,30 +853,19 @@
             <div class="title-bar" style="width: 100%; height: 40px;">
                 <span>Commands</span>
             </div>
-
-            <div class="category" style="width: 90%;">
+                <!-- Regrouper les commandes par extension -->
+            <div class="category" style="width: 90%;" ng-repeat="(extension, commands) in groupedGlobalCommands">
                 <div class="category-title" style="width: 80%; height: 35px;">
-                    <span>Nickel</span>
-                    <div class="category-line">
-                    </div>
+                    <span>{{extension || 'unknown'}}</span>
+                    <div class="category-line"></div>
                 </div>
-
-
+        
                 <div class="category-content" style="width: 90%">
-                    <div class="command-button">
-                        <span>Broadcast</span>
+                    <div class="command-button" ng-repeat="(commandName, commandData) in commands" >
+                        <span>{{commandName}}</span>
                     </div>
-    
-                    <div class="command-button">
-                        <span>Countdown</span>
-                    </div>
-    
-    
                 </div>
-    
-
             </div>
-           
         </div>
     </div>
 </div>

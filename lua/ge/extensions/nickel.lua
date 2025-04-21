@@ -11,6 +11,7 @@ local serverinfos = {}
 local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
 local usercommands = {}
+local globalcommands = {}
 local environment = {
     temperature = 0,
     time = {0, 0},
@@ -157,11 +158,7 @@ local function onExtensionUnloaded()
 end
 
 
-local function onWorldReadyState(state)
-    if state == 2 then
-        log('D', "Nickel", "Nickel interface ready in this instance")
-    end
-end
+
 
 -- Fonction pour convertir une valeur temporelle en hh:mm
 function formatTimeOfDay(value)
@@ -192,19 +189,19 @@ local function initializeInterface(offset)
     searchPlayerlist = {}
     if not initialized then
         log('D', "Nickel", "Initialized interface via AngularJS")
+        log('D', "Nickel", "Offset is " .. offset)
         TriggerServerEvent("initInterface", offset)
-        weatherPresets = core_weather.getPresets()
         initialized = true
-    elseif initialized then
-        print("already initialized")
-        guihooks.trigger('SyncWeatherPresets', weatherPresets)
-        guihooks.trigger('SyncEnvironment', environment)
-        guihooks.trigger("NKgetServerValues", serverinfos)
-        guihooks.trigger("NKgetUserValues", self_action_perm)
-        guihooks.trigger("getPlayers", playerlist)
-        guihooks.trigger("getRoles", roles)
-        guihooks.trigger("NKgetUserCommands", usercommands)
     end
+    guihooks.trigger('SyncWeatherPresets', core_weather.getPresets())
+    guihooks.trigger('SyncEnvironment', environment)
+    guihooks.trigger("NKgetServerValues", serverinfos)
+    guihooks.trigger("NKgetUserValues", self_action_perm)
+    guihooks.trigger("getPlayers", playerlist)
+    guihooks.trigger("getRoles", roles)
+    guihooks.trigger("NKgetUserCommands", usercommands)
+    guihooks.trigger("NKgetGlobalCommands", globalcommands)
+
 end
 
 local function resetPlayerList()
@@ -214,6 +211,11 @@ local function resetPlayerList()
     initializeInterface(0)
 end
 
+local function onWorldReadyState(state)
+    if state == 2 then
+        log('D', "Nickel", "Nickel interface ready in this instance")
+    end
+end
 
 --searchPlayer
 local function searchPlayer(search)
@@ -248,6 +250,13 @@ local function getUserCommands(data)
     usercommands = finaldata
     print("triggering getUserCommands")
     guihooks.trigger("NKgetUserCommands", usercommands)
+end
+
+local function getGlobalCommands(data)
+    local finaldata = jsonDecode(data)
+    globalcommands = finaldata
+    print("triggering getGlobalCommands")
+    guihooks.trigger("NKgetGlobalCommands", globalcommands)
 end
 
 local function NKinsertPlayers(data)
@@ -291,7 +300,7 @@ local function removeRole(rolename, player)
     TriggerServerEvent("runCommand", data)
 end
 
-local function sendUserCommand(command, args)
+local function sendCommand(command, args)
     local data = jsonEncode({command = command, args = args})
     TriggerServerEvent("runCommand", data)
 end
@@ -305,10 +314,12 @@ AddEventHandler("NKgetPlayers", NKgetPlayers)
 AddEventHandler("NKResetSearch", resetSearch)
 AddEventHandler("NKResetPlayerList", resetPlayerList)
 AddEventHandler("NKgetRoles", NKgetRoles) 
-AddEventHandler("NKgetUserCommands", getUserCommands) -- Add our events handler to the list managed by BeamMP
+AddEventHandler("NKgetUserCommands", getUserCommands)
+AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events handler to the list managed by BeamMP
 
-M.sendUserCommand = sendUserCommand
+M.sendCommand = sendCommand
 M.getUserCommands = getUserCommands
+M.getGlobalCommands = getGlobalCommands
 M.addRole = addRole
 M.removeRole = removeRole
 M.getTemp = getTemp
@@ -333,5 +344,6 @@ M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
 M.onWorldReadyState = onWorldReadyState
+M.onInit = function() setExtensionUnloadMode(M, "manual") end
 
 return M

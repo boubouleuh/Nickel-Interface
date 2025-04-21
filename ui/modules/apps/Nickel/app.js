@@ -24,6 +24,74 @@ app.filter('unique', function() {
     };
 });
 
+app.filter('groupBy', function(){
+  return function(list, group_by) {
+
+  var filtered = [];
+  var prev_item = null;
+  var group_changed = false;
+  // this is a new field which is added to each item where we append "_CHANGED"
+  // to indicate a field change in the list
+  var new_field = group_by + '_CHANGED';
+
+  // loop through each item in the list
+  angular.forEach(list, function(item) {
+
+    group_changed = false;
+
+    // if not the first item
+    if (prev_item !== null) {
+
+      // check if the group by field changed
+      if (prev_item[group_by] !== item[group_by]) {
+        group_changed = true;
+      }
+
+    // otherwise we have the first item in the list which is new
+    } else {
+      group_changed = true;
+    }
+
+    // if the group changed, then add a new field to the item
+    // to indicate this
+    if (group_changed) {
+      item[new_field] = true;
+    } else {
+      item[new_field] = false;
+    }
+
+    filtered.push(item);
+    prev_item = item;
+
+  });
+
+  return filtered;
+  };
+})
+
+app.directive('commandInputs', function() {
+  return {
+      restrict: 'E',
+      scope: {
+          command: '=',
+          argsModel: '=',
+          sendCommand: '&',
+          onClickOutside: '&',
+          clickOutsideExceptions: '@'
+      },
+      template: `
+          <div class="command-inputs" click-outside="onClickOutside()" click-outside-exceptions="{{clickOutsideExceptions}}">>
+              <div class="command-arg" ng-repeat="arg in command.args.slice(1)">
+                  <input type="text" placeholder="{{capitalizeFirstLetter(arg.name)}} ({{arg.type}})" 
+                         ng-model="argsModel[arg.name]" ng-if="arg.type === 'string'" />
+                  <!-- Ajoutez d'autres types d'arguments ici -->
+              </div>
+              <button ng-click="sendCommand({commandName: command.name})">Send Command</button>
+          </div>
+      `
+  };
+});
+
 
 app.directive('clickOutside', ['$document', function($document) {
   return {
@@ -67,25 +135,31 @@ app.directive('nickel', [function () {
     scope: true,
     controller: ['$scope', '$timeout', '$sce', function($scope, $timeout, $sce) {
   
-        // Function to be called on page load 
-      $scope.init = function($scope) { 
-        $scope.hideCard = true
-        $scope.hideAddRoles = true
-        $scope.hideRoles = true
-        $scope.hideUserCommandInputs = true
-        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
-        setTimeout(function() {
-            registerCustomEvents($scope);
-        }, 1000);
-        console.log("Angular calling client lua ...")
+      $scope.hideCard = true
+      $scope.hideAddRoles = true
+      $scope.hideRoles = true
+      $scope.hideUserCommandInputs = true
+      $scope.hideGlobalCommandInputs = true
 
 
-        }
-  
+      $scope.nkinit = function() {
+ 
+          console.log("NKinit triggered")
+          bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+          setTimeout(function() {
+              registerCustomEvents($scope);
+              console.log("Angular calling client lua ...")
+          }, 5000);
+      }
+ 
 
+      $timeout($scope.nkinit, 1000)
+      
 
-
-      $scope.server_version = "Offline"
+      // // called on load
+      // $scope.$on('NKinit', function (event) {
+      //   nkinit()
+      // });
 
       $scope.imgSafe = function(url){
         return $sce.trustAsResourceUrl(url);
@@ -108,26 +182,46 @@ app.directive('nickel', [function () {
 
     $scope.$on('NKgetUserCommands', function (event, data) {
         console.log("triggered NKgetUserCommands", data)
+        $scope.$apply(() => {
         $scope.user_commands = data
         console.log($scope.user_commands)
+        });
+    });
+    $scope.$on('NKgetGlobalCommands', function (event, data) {
+        console.log("triggered NKgetGlobalCommands", data)
+        $scope.$apply(() => {
+        $scope.global_commands = data
+        console.log($scope.global_commands)
+        $scope.groupedGlobalCommands = getGroupedGlobalCommands();
+        console.log($scope.groupedGlobalCommands)
+        });
     });
     $scope.$on('NKgetUserValues', function (event, data) {
+      $scope.$apply(() => {
       console.log(data)      
       $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
+      });
     });
 
     $scope.$on('NKgetServerValues', function (event, data) {
+      $scope.$apply(() => {
         $scope.nkserver_version = data.server_version
-
+      });
     });
     $scope.$on('getPlayers', function (event, data) {
-      $scope.nkplayers = data
-      console.log(data)
+      $scope.$apply(() => {
+        $scope.nkplayers = data
+        console.log(data)
+      });
+
     });
     $scope.$on('getRoles', function (event, data) {
+      $scope.$apply(() => {
       $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
+      });
     });
     $scope.$on('SyncEnvironment', function (event, data) {
+      $scope.$apply(() => {
       $scope.game_temp = data.temperature
       $scope.game_gravity = data.gravity
       $scope.game_wind = data.wind
@@ -135,11 +229,14 @@ app.directive('nickel', [function () {
       if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
       if(parseInt(data.time[1],10)<10)data.time[1]='0'+data.time[1];
       $scope.game_time = data.time
+      });
 
       
     });
     $scope.$on('SyncWeatherPresets', function (event, data) {
+      $scope.$apply(() => {
       $scope.weatherPresets = data
+      });
     });
 
     $scope.resizeApp = function() {
@@ -212,6 +309,14 @@ app.directive('nickel', [function () {
         $scope.usercommandArgs[arg.name] = '';
       });
     };
+
+    $scope.selectGlobalCommand = function(commandName) {
+      $scope.hideGlobalCommandInputs = false;
+      $scope.selectedGlobalCommand = $scope.global_commands[commandName];
+      $scope.selectedGlobalCommand.name = commandName;
+      $scope.globalcommandArgs = {};
+
+    }
   
 
     $scope.sendUserCommand = function(commandName) {
@@ -223,7 +328,18 @@ app.directive('nickel', [function () {
         argsString += `"${args[arg.name]}", `;
       });
       argsString = argsString.slice(0, -2); // Remove the trailing comma and space
-      bngApi.engineLua(`extensions.Nickel.sendUserCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
+      bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
+    };
+
+    $scope.sendGlobalCommand = function(commandName) {
+      const command = $scope.global_commands[commandName];
+      const args = $scope.globalcommandArgs;
+      let argsString = '';
+      command.args.forEach(arg => {
+        argsString += `"${args[arg.name]}", `;
+      });
+      argsString = argsString.slice(0, -2); // Remove the trailing comma and space
+      bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {${argsString}})`);
     };
 
     $scope.showAddRoles = function() {
@@ -243,10 +359,29 @@ app.directive('nickel', [function () {
     }
 
     $scope.hasActiveStatus = function(player) {
+      if (Object.keys(player.status).length == 0) {
+        return false; // Handle the case where player or status is not defined
+      }
       return player.status.some(function(status) {
           return status.status_value === 1;
       });
   };
+
+     function getGroupedGlobalCommands() {
+      if (!$scope.global_commands) return {}; // Si global_commands n'est pas encore défini
+      let grouped = {};
+      angular.forEach($scope.global_commands, function(value, key) {
+          let ext = value.extension || 'unknown';
+          if (!grouped[ext]) {
+              grouped[ext] = {};
+          }
+          grouped[ext][key] = value;
+      });
+      return grouped;
+  };
+
+
+
   }]
 
   }
