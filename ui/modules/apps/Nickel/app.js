@@ -80,7 +80,7 @@ app.directive('commandInputs', function() {
           clickOutsideExceptions: '@'
       },
       template: `
-          <div class="command-inputs" click-outside="onClickOutside()" click-outside-exceptions="{{clickOutsideExceptions}}">>
+          <div class="command-inputs" click-outside="onClickOutside()" click-outside-exceptions="{{clickOutsideExceptions}}">
               <div class="command-arg" ng-repeat="arg in command.args.slice(1)">
                   <input type="text" placeholder="{{capitalizeFirstLetter(arg.name)}} ({{arg.type}})" 
                          ng-model="argsModel[arg.name]" ng-if="arg.type === 'string'" />
@@ -88,7 +88,14 @@ app.directive('commandInputs', function() {
               </div>
               <button ng-click="sendCommand({commandName: command.name})">Send Command</button>
           </div>
-      `
+      `,
+      link: function(scope) {
+        scope.capitalizeFirstLetter = function(str) {
+        console.log("capitalizeFirstLetter", str)
+        if (!str) return str;
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  }
   };
 });
 
@@ -311,6 +318,7 @@ app.directive('nickel', [function () {
     };
 
     $scope.selectGlobalCommand = function(commandName) {
+      console.log("selectGlobalCommand", commandName)
       $scope.hideGlobalCommandInputs = false;
       $scope.selectedGlobalCommand = $scope.global_commands[commandName];
       $scope.selectedGlobalCommand.name = commandName;
@@ -324,10 +332,12 @@ app.directive('nickel', [function () {
       const args = $scope.usercommandArgs;
       let argsString = '';
       // Ignore the first argument (playername)
+      if (command.args &&  Object.keys(command.args).length != 0) {
       command.args.slice(1).forEach(arg => {
         argsString += `"${args[arg.name]}", `;
       });
       argsString = argsString.slice(0, -2); // Remove the trailing comma and space
+     }
       bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
     };
 
@@ -335,10 +345,12 @@ app.directive('nickel', [function () {
       const command = $scope.global_commands[commandName];
       const args = $scope.globalcommandArgs;
       let argsString = '';
-      command.args.forEach(arg => {
-        argsString += `"${args[arg.name]}", `;
-      });
+      if (command.args &&  Object.keys(command.args).length != 0) {
+        command.args.forEach(arg => {
+          argsString += `"${args[arg.name]}", `;
+        });
       argsString = argsString.slice(0, -2); // Remove the trailing comma and space
+      }
       bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {${argsString}})`);
     };
 
@@ -354,6 +366,7 @@ app.directive('nickel', [function () {
     }
 
     $scope.capitalizeFirstLetter = function(str) {
+      console.log("capitalizeFirstLetter", str)
       if (!str) return str;
       return str.charAt(0).toUpperCase() + str.slice(1);
     }

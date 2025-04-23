@@ -687,7 +687,7 @@
     <command-inputs 
         ng-hide="hideGlobalCommandInputs" 
         on-click-outside="hideGlobalCommandInputs = true" 
-        click-outside-exceptions="action-button"
+        click-outside-exceptions="command-button"
         command="selectedGlobalCommand" 
         args-model="globalcommandArgs" 
         send-command="sendGlobalCommand(commandName)">
@@ -861,7 +861,7 @@
                 </div>
         
                 <div class="category-content" style="width: 90%">
-                    <div class="command-button" ng-repeat="(commandName, commandData) in commands" >
+                    <div class="command-button anim-button" ng-repeat="(commandName, commandData) in commands" ng-click="selectGlobalCommand(commandName)">
                         <span>{{commandName}}</span>
                     </div>
                 </div>
