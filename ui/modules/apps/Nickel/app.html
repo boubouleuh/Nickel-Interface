@@ -666,7 +666,7 @@
     }
     </style>
     <div style="width: 100%; height: 40px;" class="top-bar-container">
-        <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="top-bar-icon">
+        <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="top-bar-icon" ng-click="switchPage('settings')">
         <img ng-click="resizeApp()" src="/ui/modules/apps/Nickel/icons/arrow_icon.svg" alt="arrow icon" class="top-bar-icon arrow-icon">
         
         <div class="search-container">
@@ -694,7 +694,7 @@
     </command-inputs>
     <!-- TODO : add global command inputs -->
 
-    <div style="width: 100%; height: 90%;" class="main-container">
+    <div ng-if="currentPage === 'main'" style="width: 100%; height: 90%;" class="main-container">
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
@@ -804,7 +804,7 @@
 
             <div class="extensions", style="width: 80%;">
                 <img src="/ui/modules/apps/Nickel/icons/Ext_icon.svg" alt="extension icon" class="top-left-icon">
-                <span class="extension">Economy</span>
+                <span class="extension">Coming soon</span>
 
                 <div>
                     <span></span>
@@ -868,4 +868,17 @@
             </div>
         </div>
     </div>
+
+
+    <div ng-if="currentPage === 'settings'" style="width: 100%; height: 90%;" class="settings-container">
+    
+        <div class="title-bar" style="width: 100%; height: 40px;">
+            <span>Settings</span>
+        </div>
+        <div class="settings-content">
+            <span>Settings content goes here</span>
+        </div>
+    </div>
+
+
 </div>

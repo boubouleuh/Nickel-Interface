@@ -149,6 +149,13 @@ app.directive('nickel', [function () {
       $scope.hideGlobalCommandInputs = true
 
 
+      $scope.currentPage = 'main'; // Page par défaut
+
+      $scope.switchPage = function(page) {
+          $scope.currentPage = page;
+      };
+
+
       $scope.nkinit = function() {
  
           console.log("NKinit triggered")
@@ -247,7 +254,7 @@ app.directive('nickel', [function () {
     });
 
     $scope.resizeApp = function() {
-      let element = document.querySelector(".main-container")
+      let element = document.querySelector("." + $scope.currentPage + "-container")
       let element2 = document.querySelector(".arrow-icon")
 
       if (localStorage.getItem("NKclosed") == "false"){
