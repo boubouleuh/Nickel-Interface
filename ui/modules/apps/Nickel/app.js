@@ -142,14 +142,16 @@ app.directive('nickel', [function () {
     scope: true,
     controller: ['$scope', '$timeout', '$sce', function($scope, $timeout, $sce) {
   
-      $scope.hideCard = true
-      $scope.hideAddRoles = true
-      $scope.hideRoles = true
-      $scope.hideUserCommandInputs = true
-      $scope.hideGlobalCommandInputs = true
 
+        $scope.hideCard = true
+        $scope.hideAddRoles = true
+        $scope.hideRoles = true
+        $scope.hideUserCommandInputs = true
+        $scope.hideGlobalCommandInputs = true
 
-      $scope.currentPage = 'main'; // Page par défaut
+        $scope.initiated = false
+
+        $scope.currentPage = 'main'; // Page par défaut
 
       $scope.switchPage = function(page) {
           $scope.currentPage = page;
@@ -157,7 +159,9 @@ app.directive('nickel', [function () {
 
 
       $scope.nkinit = function() {
- 
+          $scope.$apply(() => {
+            $scope.initiated = true
+          })
           console.log("NKinit triggered")
           bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
           setTimeout(function() {
@@ -165,15 +169,21 @@ app.directive('nickel', [function () {
               console.log("Angular calling client lua ...")
           }, 5000);
       }
- 
 
-      $timeout($scope.nkinit, 1000)
-      
 
-      // // called on load
-      // $scope.$on('NKinit', function (event) {
-      //   nkinit()
-      // });
+
+      bngApi.engineLua('extensions.Nickel.checkInitiate()')
+
+      // called on load
+      $scope.$on('NKisInitiated', function (event, data) {
+        $scope.$apply(() => {
+          $scope.initiated = data
+        });
+
+        if ($scope.initiated){
+           $scope.nkinit()
+        }
+      });
 
       $scope.imgSafe = function(url){
         return $sce.trustAsResourceUrl(url);
@@ -227,12 +237,21 @@ app.directive('nickel', [function () {
         $scope.nkplayers = data
         console.log(data)
       });
-
+      if (!$scope.initiated){
+        bngApi.engineLua('extensions.Nickel.initiate()')
+        $timeout($scope.nkinit, 1000) // Call nkinit after 1 second
+      }
     });
     $scope.$on('getRoles', function (event, data) {
       $scope.$apply(() => {
       $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
       });
+    });
+    $scope.$on('NKgetInterfaceValues', function (event, data) {
+      $scope.$apply(() => {
+        console.log("NKgetInterfaceValues", data)
+        $scope.interface_values = data
+      })
     });
     $scope.$on('SyncEnvironment', function (event, data) {
       $scope.$apply(() => {
@@ -312,6 +331,18 @@ app.directive('nickel', [function () {
       }
      
     }
+
+    $scope.getValueType = function(value) {
+      if (typeof value === 'boolean') {
+          return 'boolean';
+      } else if (typeof value === 'number') {
+          return 'number';
+      } else if (typeof value === 'string') {
+          return 'string';
+      } else {
+          return 'unknown';
+      }
+    };
 
     $scope.selectUserCommand = function(commandName) {
       $scope.hideUserCommandInputs = false;

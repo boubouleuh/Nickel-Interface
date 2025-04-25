@@ -12,6 +12,8 @@ local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
 local usercommands = {}
 local globalcommands = {}
+local interfaceValues = {}
+local jsinitiated = false
 local environment = {
     temperature = 0,
     time = {0, 0},
@@ -201,6 +203,7 @@ local function initializeInterface(offset)
     guihooks.trigger("getRoles", roles)
     guihooks.trigger("NKgetUserCommands", usercommands)
     guihooks.trigger("NKgetGlobalCommands", globalcommands)
+    guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 
 end
 
@@ -290,6 +293,13 @@ local function NKgetRoles(data)
     guihooks.trigger("getRoles", roles)
 end
 
+local function getInterfaceValues(data)
+    local finaldata = jsonDecode(data)
+    interfaceValues = finaldata
+    guihooks.trigger("NKgetInterfaceValues", interfaceValues)
+end
+
+
 
 local function addRole(rolename, player)
     local data = jsonEncode({command = "grantrole", args = {rolename, player}})
@@ -305,6 +315,17 @@ local function sendCommand(command, args)
     TriggerServerEvent("runCommand", data)
 end
 
+local function initiate()
+    jsinitiated = true
+    M.checkInitiate()
+end
+
+local function checkInitiate()
+    guihooks.trigger("NKisInitiated", jsinitiated)
+end
+
+
+AddEventHandler("getInterfaceValues", getInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
 AddEventHandler("NKgetServerInfos", NKgetServerValues) 
@@ -317,9 +338,12 @@ AddEventHandler("NKgetRoles", NKgetRoles)
 AddEventHandler("NKgetUserCommands", getUserCommands)
 AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events handler to the list managed by BeamMP
 
+M.checkInitiate = checkInitiate
+M.initiate = initiate
 M.sendCommand = sendCommand
 M.getUserCommands = getUserCommands
 M.getGlobalCommands = getGlobalCommands
+M.getInterfaceValues = getInterfaceValues
 M.addRole = addRole
 M.removeRole = removeRole
 M.getTemp = getTemp
