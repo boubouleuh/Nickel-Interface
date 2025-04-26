@@ -56,18 +56,41 @@ local function updateEnvironment(newEnv)
     end 
 end
 
-function deepCompare(t1, t2)
-    if type(t1) ~= type(t2) then return false end
+
+
+
+function deepCompare(t1, t2, visited)
+  if type(t1) ~= type(t2) then return false end
     if type(t1) ~= "table" then return t1 == t2 end
-    
-    for k, v in pairs(t1) do
-        if not deepCompare(v, t2[k]) then return false end
+
+    -- Vérifier les métatables
+    if getmetatable(t1) ~= getmetatable(t2) then return false end
+
+    -- Détecter les cycles
+    visited = visited or {}
+    if visited[t1] and visited[t1] == t2 then return true end
+    visited[t1] = t2
+
+    -- Vérifier les tailles des tables
+    local function tableLength(t)
+        local count = 0
+        for _ in pairs(t) do
+            count = count + 1
+        end
+        return count
     end
-    
+
+    if tableLength(t1) ~= tableLength(t2) then return false end
+
+    -- Comparer les clés et les valeurs
+    for k, v in pairs(t1) do
+        if not deepCompare(v, t2[k], visited) then return false end
+    end
+
     for k, v in pairs(t2) do
         if t1[k] == nil then return false end
     end
-    
+
     return true
 end
 
@@ -141,6 +164,11 @@ function clientSyncEnvironment()
     TriggerServerEvent('SyncEnvironment', jsonEncode(environment))
 end
 
+function clientSyncInterfaceValues()
+
+    MPVehicleGE.hideNicknames(not interfaceValues.showNameplates)
+    guihooks.trigger('SyncInterfaceValues', jsonEncode(interfaceValues))
+end
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
@@ -299,6 +327,13 @@ local function getInterfaceValues(data)
     guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 end
 
+local function SyncInterfaceValues(key, value)
+    local newInterfaceValues = interfaceValues
+    newInterfaceValues[key] = value
+    local newInterfaceValuesJson = jsonEncode(newInterfaceValues)
+    TriggerServerEvent("SyncInterfaceValues", newInterfaceValuesJson)
+end
+
 
 
 local function addRole(rolename, player)
@@ -326,6 +361,7 @@ end
 
 
 AddEventHandler("getInterfaceValues", getInterfaceValues)
+AddEventHandler("clientSyncInterfaceValues", clientSyncInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
 AddEventHandler("NKgetServerInfos", NKgetServerValues) 
@@ -338,6 +374,7 @@ AddEventHandler("NKgetRoles", NKgetRoles)
 AddEventHandler("NKgetUserCommands", getUserCommands)
 AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events handler to the list managed by BeamMP
 
+M.syncInterfaceValues = SyncInterfaceValues
 M.checkInitiate = checkInitiate
 M.initiate = initiate
 M.sendCommand = sendCommand

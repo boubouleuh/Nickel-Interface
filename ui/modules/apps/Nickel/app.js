@@ -230,6 +230,7 @@ app.directive('nickel', [function () {
     $scope.$on('NKgetServerValues', function (event, data) {
       $scope.$apply(() => {
         $scope.nkserver_version = data.server_version
+        $scope.nkserver_name = data.server_name
       });
     });
     $scope.$on('getPlayers', function (event, data) {
@@ -402,6 +403,11 @@ app.directive('nickel', [function () {
     $scope.removeRole = function(rolename, player) {
       bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
     }
+
+    $scope.updateSetting = function (key, value) {
+        bngApi.engineLua(`extensions.Nickel.syncInterfaceValues("${key}", "${value}")`)
+    };
+
 
     $scope.capitalizeFirstLetter = function(str) {
       console.log("capitalizeFirstLetter", str)
@@ -586,6 +592,7 @@ function registerCustomEvents($scope) {
 
     // run func every seconds
     setInterval(function() {
+      
       bngApi.engineLua('extensions.Nickel.jsUpdateEnvironment()');
     }, 1000);
   
