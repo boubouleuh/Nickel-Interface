@@ -117,8 +117,7 @@
         
         display: grid;
         align-items: center;
-        grid-template-columns: 1fr 1fr 1fr;
-
+        grid-template-columns: 1fr 1fr 0.5fr 1fr;
         border-collapse: separate; 
         background-color: rgba(var(--main-container-color));
         border-radius: 15px;
@@ -642,6 +641,9 @@
         color: var(--secondary-text-color);
     }
 
+    .nickel-interface .discord-icon{
+        transform: scale(1.2);
+    }
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -683,7 +685,7 @@
         <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="top-bar-icon" ng-if="currentPage === 'main'" ng-click="switchPage('settings')">
         <img src="/ui/modules/apps/Nickel/icons/home_icon.svg" alt="home icon" class="top-bar-icon" ng-if="currentPage != 'main'" ng-click="switchPage('main')">
         <img ng-click="resizeApp()" src="/ui/modules/apps/Nickel/icons/arrow_icon.svg" alt="arrow icon" class="top-bar-icon arrow-icon">
-        
+        <img src="/ui/modules/apps/Nickel/icons/discord_icon.svg" alt="discord icon" class="top-bar-icon discord-icon" onclick="openDiscordLink()">
         <div class="search-container">
             <input type="search" name="search" id="NKsearch" ng-model="search" placeholder="Search" class="search-input">
             <img src="/ui/modules/apps/Nickel/icons/search_icon.svg" alt="search icon" class="search-icon">

@@ -633,19 +633,8 @@ function registerCustomEvents($scope) {
   }
 
   
+  function openDiscordLink(){
+	  bngApi.engineLua(`MPCoreNetwork.openURL("https://discord.gg/h5P84FFw7B")`);
+  }
 
-    // let tempinput = document.querySelector(".temp-input")
-    // const onTempInput = (event) => {
-    //   bngApi.engineLua('extensions.Nickel.setTemp(' + $scope.game_temp + ')')
-    //   }
-
-    // tempinput.addEventListener("keyup", onTempInput)
-
-
-    // let gravityinput = document.querySelector(".gravity-input")
-    // const onGravityInput = (event) => {
-    //   bngApi.engineLua('extensions.Nickel.setGravity(' + $scope.game_gravity + ')')
-    //   }
-
-    // gravityinput.addEventListener("keyup", onGravityInput)
 
