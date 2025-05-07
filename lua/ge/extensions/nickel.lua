@@ -164,11 +164,7 @@ function clientSyncEnvironment()
     TriggerServerEvent('SyncEnvironment', jsonEncode(environment))
 end
 
-function clientSyncInterfaceValues()
 
-    MPVehicleGE.hideNicknames(not interfaceValues.showNameplates)
-    guihooks.trigger('SyncInterfaceValues', jsonEncode(interfaceValues))
-end
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
@@ -324,6 +320,7 @@ end
 local function getInterfaceValues(data)
     local finaldata = jsonDecode(data)
     interfaceValues = finaldata
+    MPVehicleGE.hideNicknames(not interfaceValues.showNameplates)
     guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 end
 
@@ -361,7 +358,6 @@ end
 
 
 AddEventHandler("getInterfaceValues", getInterfaceValues)
-AddEventHandler("clientSyncInterfaceValues", clientSyncInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
 AddEventHandler("NKgetServerInfos", NKgetServerValues) 
@@ -374,6 +370,7 @@ AddEventHandler("NKgetRoles", NKgetRoles)
 AddEventHandler("NKgetUserCommands", getUserCommands)
 AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events handler to the list managed by BeamMP
 
+M.NKgetPlayers = NKgetPlayers
 M.syncInterfaceValues = SyncInterfaceValues
 M.checkInitiate = checkInitiate
 M.initiate = initiate

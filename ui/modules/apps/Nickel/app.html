@@ -788,7 +788,7 @@
 
                 <div class="category-content" style="width: 90%">
 
-                    <div data-bmpid="{{nkplayer.beammpid}}" class="nkplayer-button anim-button" ng-repeat="(index, nkplayer) in nkplayers track by nkplayer.beammpid" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,index)">
+                    <div data-bmpid="{{nkplayer.beammpid}}" class="nkplayer-button anim-button" ng-repeat="(index, nkplayer) in nkplayers | limitTo: limit track by nkplayer.beammpid" ng-if="getHighestRole(nkplayer.roles).name == nkrole.roleName" ng-click="showPlayerCard($event,index)">
                         <img ng-src="{{imgSafe(nkplayer.b64img)}}" alt="icon" class="player-icon">
 
                         

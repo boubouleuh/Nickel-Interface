@@ -141,302 +141,318 @@ app.directive('nickel', [function () {
     restrict: 'EA',
     scope: true,
     controller: ['$scope', '$timeout', '$sce', function($scope, $timeout, $sce) {
-  
 
-        $scope.hideCard = true
-        $scope.hideAddRoles = true
-        $scope.hideRoles = true
-        $scope.hideUserCommandInputs = true
-        $scope.hideGlobalCommandInputs = true
+    $scope.limit = 30
+    $scope.hideCard = true
+    $scope.hideAddRoles = true
+    $scope.hideRoles = true
+    $scope.hideUserCommandInputs = true
+    $scope.hideGlobalCommandInputs = true
 
-        $scope.initiated = false
+    $scope.initiated = false
 
-        $scope.currentPage = 'main'; // Page par défaut
+    $scope.currentPage = 'main'; // Page par défaut
 
-      $scope.switchPage = function(page) {
-          $scope.currentPage = page;
-      };
-
-
-      $scope.nkinit = function() {
-          $scope.$apply(() => {
-            $scope.initiated = true
-          })
-          console.log("NKinit triggered")
-          bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
-          setTimeout(function() {
-              registerCustomEvents($scope);
-              console.log("Angular calling client lua ...")
-          }, 5000);
-      }
+  $scope.switchPage = function(page) {
+      $scope.currentPage = page;
+  };
 
 
-
-      bngApi.engineLua('extensions.Nickel.checkInitiate()')
-
-      // called on load
-      $scope.$on('NKisInitiated', function (event, data) {
-        $scope.$apply(() => {
-          $scope.initiated = data
-        });
-
-        if ($scope.initiated){
-           $scope.nkinit()
-        }
-      });
-
-      $scope.imgSafe = function(url){
-        return $sce.trustAsResourceUrl(url);
-
-      };
-
-      // $scope.nkplayers = {0:{"name":"bouboule", "roles":{
-      //   0:{"roleName":"Administrator", "permlvl":3},
-      //   1:{"roleName":"Member", "permlvl":1}
-      // }}}
-
-      // $scope.nkroles = {0:{"roleName":"Administrator", "permlvl":3}}
-
-    $scope.hideSelectIcon = function() {
-            var icon = document.querySelector('.meteo-input .md-select-icon');
-            if (icon) {
-                icon.style.display = 'none';
-            }
-        };
-
-    $scope.$on('NKgetUserCommands', function (event, data) {
-        console.log("triggered NKgetUserCommands", data)
-        $scope.$apply(() => {
-        $scope.user_commands = data
-        console.log($scope.user_commands)
-        });
-    });
-    $scope.$on('NKgetGlobalCommands', function (event, data) {
-        console.log("triggered NKgetGlobalCommands", data)
-        $scope.$apply(() => {
-        $scope.global_commands = data
-        console.log($scope.global_commands)
-        $scope.groupedGlobalCommands = getGroupedGlobalCommands();
-        console.log($scope.groupedGlobalCommands)
-        });
-    });
-    $scope.$on('NKgetUserValues', function (event, data) {
+  $scope.nkinit = function() {
       $scope.$apply(() => {
-      console.log(data)      
-      $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
-      });
-    });
-
-    $scope.$on('NKgetServerValues', function (event, data) {
-      $scope.$apply(() => {
-        $scope.nkserver_version = data.server_version
-        $scope.nkserver_name = data.server_name
-      });
-    });
-    $scope.$on('getPlayers', function (event, data) {
-      $scope.$apply(() => {
-        $scope.nkplayers = data
-        console.log(data)
-      });
-      if (!$scope.initiated){
-        bngApi.engineLua('extensions.Nickel.initiate()')
-        $timeout($scope.nkinit, 1000) // Call nkinit after 1 second
-      }
-    });
-    $scope.$on('getRoles', function (event, data) {
-      $scope.$apply(() => {
-      $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
-      });
-    });
-    $scope.$on('NKgetInterfaceValues', function (event, data) {
-      $scope.$apply(() => {
-        console.log("NKgetInterfaceValues", data)
-        $scope.interface_values = data
+        $scope.initiated = true
       })
-    });
-    $scope.$on('SyncEnvironment', function (event, data) {
-      $scope.$apply(() => {
-      $scope.game_temp = data.temperature
-      $scope.game_gravity = data.gravity
-      $scope.game_wind = data.wind
-      $scope.game_meteo = data.meteo
-      if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
-      if(parseInt(data.time[1],10)<10)data.time[1]='0'+data.time[1];
-      $scope.game_time = data.time
-      });
+      console.log("NKinit triggered")
+      bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+  }
 
+
+
+  bngApi.engineLua('extensions.Nickel.checkInitiate()')
+
+  // called on load
+  $scope.$on('NKisInitiated', function (event, data) {
+    $scope.$apply(() => {
+      $scope.initiated = data
+    });
+
+    if ($scope.initiated){
+        $scope.nkinit()
+    }
+  });
+
+  $scope.imgSafe = function(url){
+    return $sce.trustAsResourceUrl(url);
+
+  };
+
+  // $scope.nkplayers = {0:{"name":"bouboule", "roles":{
+  //   0:{"roleName":"Administrator", "permlvl":3},
+  //   1:{"roleName":"Member", "permlvl":1}
+  // }}}
+
+  // $scope.nkroles = {0:{"roleName":"Administrator", "permlvl":3}}
+
+  $scope.hideSelectIcon = function() {
+          var icon = document.querySelector('.meteo-input .md-select-icon');
+          if (icon) {
+              icon.style.display = 'none';
+          }
+      };
+
+  $scope.$on('NKgetUserCommands', function (event, data) {
+      console.log("triggered NKgetUserCommands", data)
+      $scope.$apply(() => {
+      $scope.user_commands = data
+      console.log($scope.user_commands)
+      });
+  });
+  $scope.$on('NKgetGlobalCommands', function (event, data) {
+      console.log("triggered NKgetGlobalCommands", data)
+      $scope.$apply(() => {
+      $scope.global_commands = data
+      console.log($scope.global_commands)
+      $scope.groupedGlobalCommands = getGroupedGlobalCommands();
+      console.log($scope.groupedGlobalCommands)
+      });
+  });
+  $scope.$on('NKgetUserValues', function (event, data) {
+    $scope.$apply(() => {
+    console.log(data)      
+    $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
+    });
+  });
+
+  $scope.$on('NKgetServerValues', function (event, data) {
+    $scope.$apply(() => {
+      $scope.nkserver_version = data.server_version
+      $scope.nkserver_name = data.server_name
+    });
+  });
+
+
+  $scope.$on('getPlayers', function (event, data) {
+    $scope.$apply(() => {
+      $scope.nkplayers = Object.values(data).sort((a, b) => {
+      // Tri par statut en ligne (en ligne d'abord)
+      if (a.online !== b.online) {
+          return a.online ? -1 : 1;
+      }
       
-    });
-    $scope.$on('SyncWeatherPresets', function (event, data) {
-      $scope.$apply(() => {
-      $scope.weatherPresets = data
-      });
-    });
-
-    $scope.resizeApp = function() {
-      let element = document.querySelector("." + $scope.currentPage + "-container")
-      let element2 = document.querySelector(".arrow-icon")
-
-      if (localStorage.getItem("NKclosed") == "false"){
-        localStorage.setItem("NKclosed", true);
-        element2.classList.add("arrow-icon-reverse")
-
-        element.classList.add("NKclosed")
-      }else{
-        element2.classList.remove("arrow-icon-reverse")
-        element.classList.remove("NKclosed")
-        localStorage.setItem("NKclosed", false);
+      // Tri par niveau de permission le plus élevé (descendant)
+      const maxPermA = Math.max(...a.roles.map(role => role.permlvl));
+      const maxPermB = Math.max(...b.roles.map(role => role.permlvl));
+      
+      if (maxPermA !== maxPermB) {
+          return maxPermB - maxPermA; // Descendant (les plus hauts niveaux d'abord)
       }
+      
+      // Tri alphabétique par nom
+      return a.name.localeCompare(b.name);
+    });
 
-
+   
+      console.log(data)
+    });
+    if (!$scope.initiated){
+      bngApi.engineLua('extensions.Nickel.initiate()')
+      $timeout($scope.nkinit, 1000) // Call nkinit after 1 second
     }
-    $scope.roleExists = function(roleName, roles) {
-      if (!Array.isArray(roles)) {
-        return false;
-      }
-      return roles.some(function(role) {
-          return role.name === roleName;
-      });
-    };
-    $scope.getHighestRole = function(roles) {
-      if (roles.length === 0) {
-          return null; // Handle the case where the roles array is empty
-      }
+  });
+  $scope.$on('getRoles', function (event, data) {
+    $scope.$apply(() => {
+    $scope.nkroles = data.sort((a, b) => b.permlvl - a.permlvl); 
+    });
+  });
+  $scope.$on('NKgetInterfaceValues', function (event, data) {
+    $scope.$apply(() => {
+      console.log("NKgetInterfaceValues", data)
+      $scope.interface_values = data
+    })
+  });
+  $scope.$on('SyncEnvironment', function (event, data) {
+    $scope.$apply(() => {
+    $scope.game_temp = data.temperature
+    $scope.game_gravity = data.gravity
+    $scope.game_wind = data.wind
+    $scope.game_meteo = data.meteo
+    if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
+    if(parseInt(data.time[1],10)<10)data.time[1]='0'+data.time[1];
+    $scope.game_time = data.time
+    });
+
     
-    
-      return roles.reduce((highestRole, currentRole) => {
-          return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
-      });
-    };
+  });
+  $scope.$on('SyncWeatherPresets', function (event, data) {
+    $scope.$apply(() => {
+    $scope.weatherPresets = data
+    });
+  });
 
+  $scope.resizeApp = function() {
+    let element = document.querySelector("." + $scope.currentPage + "-container")
+    let element2 = document.querySelector(".arrow-icon")
 
-    $scope.showPlayerCard = function(event, index) {
-      if (!$scope.hideCard && $scope.playerIndex === index) {
-        return
-      }
-      const playerCard = document.querySelector(".player-card")
-      const buttonRect = event.target.getBoundingClientRect(); 
-      const playerCardParent = playerCard.parentElement.getBoundingClientRect();
-      $scope.playerIndex = index
-      playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
-      $scope.hideCard = false  
-     
-     
-    };
+    if (localStorage.getItem("NKclosed") == "false"){
+      localStorage.setItem("NKclosed", true);
+      element2.classList.add("arrow-icon-reverse")
 
-    $scope.showRoles = function() {
-      if ($scope.hideRoles) {
-        $scope.hideRoles = false
-      }else{
-        $scope.hideRoles = true
-      }
-     
+      element.classList.add("NKclosed")
+    }else{
+      element2.classList.remove("arrow-icon-reverse")
+      element.classList.remove("NKclosed")
+      localStorage.setItem("NKclosed", false);
     }
 
-    $scope.getValueType = function(value) {
-      if (typeof value === 'boolean') {
-          return 'boolean';
-      } else if (typeof value === 'number') {
-          return 'number';
-      } else if (typeof value === 'string') {
-          return 'string';
-      } else {
-          return 'unknown';
-      }
-    };
 
-    $scope.selectUserCommand = function(commandName) {
-      $scope.hideUserCommandInputs = false;
-      $scope.selectedUserCommand = $scope.user_commands[commandName];
-      $scope.selectedUserCommand.name = commandName;
-      $scope.usercommandArgs = {};
-      // Ignore the first argument (playername)
-      $scope.selectedUserCommand.args.slice(1).forEach(arg => {
-        $scope.usercommandArgs[arg.name] = '';
-      });
-    };
-
-    $scope.selectGlobalCommand = function(commandName) {
-      console.log("selectGlobalCommand", commandName)
-      $scope.hideGlobalCommandInputs = false;
-      $scope.selectedGlobalCommand = $scope.global_commands[commandName];
-      $scope.selectedGlobalCommand.name = commandName;
-      $scope.globalcommandArgs = {};
-
+  }
+  $scope.roleExists = function(roleName, roles) {
+    if (!Array.isArray(roles)) {
+      return false;
+    }
+    return roles.some(function(role) {
+        return role.name === roleName;
+    });
+  };
+  $scope.getHighestRole = function(roles) {
+    if (roles.length === 0) {
+        return null; // Handle the case where the roles array is empty
     }
   
+    return roles.reduce((highestRole, currentRole) => {
+        return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
+    });
+  };
 
-    $scope.sendUserCommand = function(commandName) {
-      const command = $scope.user_commands[commandName];
-      const args = $scope.usercommandArgs;
-      let argsString = '';
-      // Ignore the first argument (playername)
-      if (command.args &&  Object.keys(command.args).length != 0) {
-      command.args.slice(1).forEach(arg => {
+
+  $scope.showPlayerCard = function(event, index) {
+    if (!$scope.hideCard && $scope.playerIndex === index) {
+      return
+    }
+    const playerCard = document.querySelector(".player-card")
+    const buttonRect = event.target.getBoundingClientRect(); 
+    const playerCardParent = playerCard.parentElement.getBoundingClientRect();
+    $scope.playerIndex = index
+    playerCard.style.top = `${(buttonRect.bottom - playerCardParent.top - 10) + playerCard.parentElement.scrollTop}px`;
+    $scope.hideCard = false  
+    
+    
+  };
+
+  $scope.showRoles = function() {
+    if ($scope.hideRoles) {
+      $scope.hideRoles = false
+    }else{
+      $scope.hideRoles = true
+    }
+    
+  }
+
+  $scope.getValueType = function(value) {
+    if (typeof value === 'boolean') {
+        return 'boolean';
+    } else if (typeof value === 'number') {
+        return 'number';
+    } else if (typeof value === 'string') {
+        return 'string';
+    } else {
+        return 'unknown';
+    }
+  };
+
+  $scope.selectUserCommand = function(commandName) {
+    $scope.hideUserCommandInputs = false;
+    $scope.selectedUserCommand = $scope.user_commands[commandName];
+    $scope.selectedUserCommand.name = commandName;
+    $scope.usercommandArgs = {};
+    // Ignore the first argument (playername)
+    $scope.selectedUserCommand.args.slice(1).forEach(arg => {
+      $scope.usercommandArgs[arg.name] = '';
+    });
+  };
+
+  $scope.selectGlobalCommand = function(commandName) {
+    console.log("selectGlobalCommand", commandName)
+    $scope.hideGlobalCommandInputs = false;
+    $scope.selectedGlobalCommand = $scope.global_commands[commandName];
+    $scope.selectedGlobalCommand.name = commandName;
+    $scope.globalcommandArgs = {};
+
+  }
+
+
+  $scope.sendUserCommand = function(commandName) {
+    const command = $scope.user_commands[commandName];
+    const args = $scope.usercommandArgs;
+    let argsString = '';
+    // Ignore the first argument (playername)
+    if (command.args &&  Object.keys(command.args).length != 0) {
+    command.args.slice(1).forEach(arg => {
+      argsString += `"${args[arg.name]}", `;
+    });
+    argsString = argsString.slice(0, -2); // Remove the trailing comma and space
+    }
+    bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
+  };
+
+  $scope.sendGlobalCommand = function(commandName) {
+    const command = $scope.global_commands[commandName];
+    const args = $scope.globalcommandArgs;
+    let argsString = '';
+    if (command.args &&  Object.keys(command.args).length != 0) {
+      command.args.forEach(arg => {
         argsString += `"${args[arg.name]}", `;
       });
-      argsString = argsString.slice(0, -2); // Remove the trailing comma and space
-     }
-      bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {"${$scope.nkplayers[$scope.playerIndex].name}", ${argsString}})`);
-    };
-
-    $scope.sendGlobalCommand = function(commandName) {
-      const command = $scope.global_commands[commandName];
-      const args = $scope.globalcommandArgs;
-      let argsString = '';
-      if (command.args &&  Object.keys(command.args).length != 0) {
-        command.args.forEach(arg => {
-          argsString += `"${args[arg.name]}", `;
-        });
-      argsString = argsString.slice(0, -2); // Remove the trailing comma and space
-      }
-      bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {${argsString}})`);
-    };
-
-    $scope.showAddRoles = function() {
-      $scope.hideAddRoles = false  
+    argsString = argsString.slice(0, -2); // Remove the trailing comma and space
     }
-
-    $scope.addRole = function(rolename, player) {
-      bngApi.engineLua(`extensions.Nickel.addRole("${rolename}", "${player}")`)
-    }
-    $scope.removeRole = function(rolename, player) {
-      bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
-    }
-
-    $scope.updateSetting = function (key, value) {
-        bngApi.engineLua(`extensions.Nickel.syncInterfaceValues("${key}", "${value}")`)
-    };
-
-
-    $scope.capitalizeFirstLetter = function(str) {
-      console.log("capitalizeFirstLetter", str)
-      if (!str) return str;
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    $scope.hasActiveStatus = function(player) {
-      if (Object.keys(player.status).length == 0) {
-        return false; // Handle the case where player or status is not defined
-      }
-      return player.status.some(function(status) {
-          return status.status_value === 1;
-      });
+    bngApi.engineLua(`extensions.Nickel.sendCommand("${commandName}", {${argsString}})`);
   };
 
-     function getGroupedGlobalCommands() {
-      if (!$scope.global_commands) return {}; // Si global_commands n'est pas encore défini
-      let grouped = {};
-      angular.forEach($scope.global_commands, function(value, key) {
-          let ext = value.extension || 'unknown';
-          if (!grouped[ext]) {
-              grouped[ext] = {};
-          }
-          grouped[ext][key] = value;
-      });
-      return grouped;
+  $scope.showAddRoles = function() {
+    $scope.hideAddRoles = false  
+  }
+
+  $scope.addRole = function(rolename, player) {
+    bngApi.engineLua(`extensions.Nickel.addRole("${rolename}", "${player}")`)
+  }
+  $scope.removeRole = function(rolename, player) {
+    bngApi.engineLua(`extensions.Nickel.removeRole("${rolename}", "${player}")`)
+  }
+
+  $scope.updateSetting = function (key, value) {
+      bngApi.engineLua(`extensions.Nickel.syncInterfaceValues("${key}", "${value}")`)
   };
 
+
+  $scope.capitalizeFirstLetter = function(str) {
+    console.log("capitalizeFirstLetter", str)
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  $scope.hasActiveStatus = function(player) {
+    if (Object.keys(player.status).length == 0) {
+      return false; // Handle the case where player or status is not defined
+    }
+    return player.status.some(function(status) {
+        return status.status_value === 1;
+    });
+  };
+
+  function getGroupedGlobalCommands() {
+  if (!$scope.global_commands) return {}; // Si global_commands n'est pas encore défini
+  let grouped = {};
+  angular.forEach($scope.global_commands, function(value, key) {
+      let ext = value.extension || 'unknown';
+      if (!grouped[ext]) {
+          grouped[ext] = {};
+      }
+      grouped[ext][key] = value;
+  });
+  return grouped;
+  };
+
+  registerCustomEvents($scope);
 
 
   }]
@@ -487,19 +503,36 @@ function registerCustomEvents($scope) {
     let playerlist = document.querySelector(".player-list");
     const onscroll = () => {
         const isReachBottom = playerlist.scrollTop + playerlist.clientHeight >= playerlist.scrollHeight;
-        if (isReachBottom) bngApi.engineLua('extensions.Nickel.updatePlayerList()');
+        // if (isReachBottom) bngApi.engineLua('extensions.Nickel.updatePlayerList()');
+         if (isReachBottom) $scope.limit += 30;
     };
     playerlist.addEventListener("scroll", onscroll);
 
     // Gestion de la recherche
     let search = document.getElementById("NKsearch");
+    let originalPlayers = [];
+    let searchTimeout;
     const onsearch = () => {
-      if ($scope.search === "") {
-        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
-      } else{
-        bngApi.engineLua('extensions.Nickel.searchPlayer("' + $scope.search + '")');
-
+      if (originalPlayers.length === 0) {
+        originalPlayers = $scope.nkplayers.slice(); // Copie de la liste originale
       }
+      clearTimeout(searchTimeout);
+      console.log("onsearch triggered", originalPlayers)
+      searchTimeout = setTimeout(() => {
+        const searchTerm = $scope.search ? $scope.search.toLowerCase() : '';
+        
+        if (!searchTerm) {
+          $scope.limit = 30;
+          bngApi.engineLua('extensions.Nickel.NKgetPlayers()');
+        } else {
+          $scope.nkplayers = originalPlayers.filter(player => {
+            return player && player.name &&
+                   player.name.toLowerCase().startsWith(searchTerm);
+          });
+        }
+
+        $scope.$apply();
+      }, 300); // Délai de 300ms
     };
     search.addEventListener("keyup", onsearch);
 
