@@ -220,6 +220,7 @@ app.directive('nickel', [function () {
     $scope.$apply(() => {
     console.log(data)      
     $scope.canEditEnvironment = hasAction('editEnvironment', data.self_action_perm)
+    $scope.canEditInterfaceSettings = hasAction('editInterfaceSettings', data.self_action_perm)
     });
   });
 
