@@ -905,13 +905,11 @@
                         <input ng-disabled="!canEditInterfaceSettings" type="number" ng-model="value" ng-change="updateSetting(key, value)" ng-switch-when="number">
                         <!-- Input pour les chaînes de caractères -->
                         <input ng-disabled="!canEditInterfaceSettings" type="text" ng-model="value" ng-change="updateSetting(key, value)" ng-switch-when="string">
-                        <!-- Gestion des autres types -->
-                    <span ng-switch-default>Type non pris en charge</span>
+                    </div>
                 </div>
             </div>
 
         </div>
     </div>
-
 
 </div>

@@ -13,6 +13,7 @@ local time = require("ge.extensions.beamng.time")
 local usercommands = {}
 local globalcommands = {}
 local interfaceValues = {}
+local bypassNametagsBool = false
 local jsinitiated = false
 local environment = {
     temperature = 0,
@@ -288,21 +289,23 @@ end
 
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
-    local updated = false
     local list = isSearching and searchPlayerlist or playerlist
 
-    -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
-    for i, v in ipairs(list) do
-        if tostring(v.beammpid) == tostring(finaldata.beammpid) then
-            list[i] = finaldata -- Mise à jour de l'entrée existante
-            updated = true
-            break
+    for i, player in ipairs(finaldata) do
+        local updated = false
+        -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
+        for i, v in ipairs(list) do
+            if tostring(v.beammpid) == tostring(player.beammpid) then
+                list[i] = player -- Mise à jour de l'entrée existante
+                updated = true
+                break
+            end
         end
-    end
 
-    -- Si le joueur n'existe pas, l'ajouter à la liste
-    if not updated then
-        table.insert(list, finaldata)
+        -- Si le joueur n'existe pas, l'ajouter à la liste
+        if not updated then
+            table.insert(list, player)
+        end
     end
 end
 
@@ -320,7 +323,12 @@ end
 local function getInterfaceValues(data)
     local finaldata = jsonDecode(data)
     interfaceValues = finaldata
-    MPVehicleGE.hideNicknames(not interfaceValues.showNameplates)
+    if not bypassNametagsBool then
+        MPVehicleGE.hideNicknames(not interfaceValues.showNameplates)     
+    else
+        MPVehicleGE.hideNicknames(false)
+    end
+
     guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 end
 
@@ -356,6 +364,14 @@ local function checkInitiate()
     guihooks.trigger("NKisInitiated", jsinitiated)
 end
 
+local function bypassNametags(value)
+    local data = jsonEncode(value)
+    if value == "on" then
+        bypassNametagsBool = true
+    elseif value == "off" then
+        bypassNametagsBool = false
+    end
+end
 
 AddEventHandler("getInterfaceValues", getInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
@@ -369,7 +385,7 @@ AddEventHandler("NKResetPlayerList", resetPlayerList)
 AddEventHandler("NKgetRoles", NKgetRoles) 
 AddEventHandler("NKgetUserCommands", getUserCommands)
 AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events handler to the list managed by BeamMP
-
+AddEventHandler("bypassNametags", bypassNametags)
 M.NKgetPlayers = NKgetPlayers
 M.syncInterfaceValues = SyncInterfaceValues
 M.checkInitiate = checkInitiate
