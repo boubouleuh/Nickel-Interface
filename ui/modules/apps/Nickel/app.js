@@ -1,4 +1,6 @@
 
+
+
 var app = angular.module('beamng.apps')
 
 
@@ -273,13 +275,23 @@ app.directive('nickel', [function () {
   });
   $scope.$on('SyncEnvironment', function (event, data) {
     $scope.$apply(() => {
-    $scope.game_temp = data.temperature
-    $scope.game_gravity = data.gravity
-    $scope.game_wind = data.wind
-    $scope.game_meteo = data.meteo
-    if(parseInt(data.time[0],10)<10)data.time[0]='0'+data.time[0];
-    if(parseInt(data.time[1],10)<10)data.time[1]='0'+data.time[1];
-    $scope.game_time = data.time
+    if (!$scope.isTempInputFocused) {
+      $scope.game_temp = data.temperature
+    }
+    if (!$scope.isGravityInputFocused) {
+      $scope.game_gravity = data.gravity
+    }
+    if (!$scope.isWindInputFocused) {
+      $scope.game_wind = data.wind
+    }
+    if (!$scope.isMeteoInputFocused) {
+      $scope.game_meteo = data.meteo
+    }
+    if (!$scope.isTimeInputFocused) {
+      $scope.game_time = data.time
+    }
+    const [hours, minutes] = data.time;
+    $scope.formattedGameTime = new Date(1970, 0, 1, hours, minutes, 0);
     });
 
     
@@ -440,6 +452,55 @@ app.directive('nickel', [function () {
     });
   };
 
+  $scope.updateTemp = function (temp) {
+      if (!temp) return;
+      bngApi.engineLua(`extensions.Nickel.setTemp(${temp})`);
+    }
+
+  $scope.updateGravity = function (gravity) {
+    console.log("updateGravity", gravity)
+    if (!gravity) return;
+
+    // Envoie les nouvelles valeurs au backend
+    bngApi.engineLua(`extensions.Nickel.setGravity(${gravity})`);
+  }
+
+  $scope.updateTime = function (time) {
+    if (!time) return;
+
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+
+    // Envoie les nouvelles valeurs au backend
+    bngApi.engineLua(`extensions.Nickel.setTime(${hours}, ${minutes})`);
+  };
+
+  $scope.updateWind = function (wind) {
+    if (!wind) return;
+
+    // Envoie les nouvelles valeurs au backend
+    bngApi.engineLua(`extensions.Nickel.setWind(${wind}, ${wind}, ${wind})`);
+  };
+
+  $scope.updateMeteo = function (meteo) {
+    if (!meteo) return;
+
+    // Envoie les nouvelles valeurs au backend
+    bngApi.engineLua(`extensions.Nickel.setMeteo("${meteo}")`);
+  }
+
+  const numInputs = document.querySelectorAll('input[type=number]')
+
+  numInputs.forEach(function(input) {
+    input.addEventListener('change', function(e) {
+      if (e.target.value == '') {
+        e.target.value = 0
+      }
+    })
+  })
+
+
+
   function getGroupedGlobalCommands() {
   if (!$scope.global_commands) return {}; // Si global_commands n'est pas encore défini
   let grouped = {};
@@ -538,25 +599,25 @@ function registerCustomEvents($scope) {
     search.addEventListener("keyup", onsearch);
 
     // Gestion des entrées de temps
-    const hInput = document.querySelector('.h-input');
-    const mInput = document.querySelector('.m-input');
+    // const hInput = document.querySelector('.h-input');
+    // const mInput = document.querySelector('.m-input');
     
-    function formatTimeInput(input, max) {
-        let value = input.value.replace(/\D/g, '');
-        value = value === '' ? '00' : value;
-        value = parseInt(value, 10);
-        value = Math.min(Math.max(value, 0), max);
-        return value.toString().padStart(2, '0');
-    }
+    // function formatTimeInput(input, max) {
+    //     let value = input.value.replace(/\D/g, '');
+    //     value = value === '' ? '00' : value;
+    //     value = parseInt(value, 10);
+    //     value = Math.min(Math.max(value, 0), max);
+    //     return value.toString().padStart(2, '0');
+    // }
 
-    function updateTimeInput(input, max) {
-        input.value = formatTimeInput(input, max);
-        $scope.game_time[input === hInput ? 0 : 1] = input.value;
-        $scope.$apply();
-    }
+    // function updateTimeInput(input, max) {
+    //     input.value = formatTimeInput(input, max);
+    //     $scope.game_time[input === hInput ? 0 : 1] = input.value;
+    //     $scope.$apply();
+    // }
 
-    hInput.addEventListener("input", () => updateTimeInput(hInput, 23));
-    mInput.addEventListener("input", () => updateTimeInput(mInput, 59));
+    // hInput.addEventListener("input", () => updateTimeInput(hInput, 23));
+    // mInput.addEventListener("input", () => updateTimeInput(mInput, 59));
 
     // Gestion des autres entrées numériques
     function handleNumericInput(inputElement, scopeVariable) {
@@ -587,49 +648,27 @@ function registerCustomEvents($scope) {
           }
       });
     }
-    handleNumericInput(document.querySelector(".temp-input"), 'game_temp');
-    handleNumericInput(document.querySelector(".gravity-input"), 'game_gravity');
-    handleNumericInput(document.querySelector(".wind-input"), 'game_wind');
+    // handleNumericInput(document.querySelector(".temp-input"), 'game_temp');
+    // handleNumericInput(document.querySelector(".gravity-input"), 'game_gravity');
+    // handleNumericInput(document.querySelector(".wind-input"), 'game_wind');
 
-    // Watches pour la synchronisation avec le moteur du jeu
-    $scope.$watch('game_temp', function(newValue, oldValue) {
-        if (newValue !== oldValue && newValue != null && newValue !== "") {
-            bngApi.engineLua('extensions.Nickel.setTemp(' + newValue + ')');
-        }
-    });
-  
-    $scope.$watch('game_gravity', function(newValue, oldValue) {
-        if (newValue !== oldValue && newValue != null && newValue !== "" && !isNaN(parseFloat(newValue)) && isFinite(newValue)) {
-            bngApi.engineLua('extensions.Nickel.setGravity(' + newValue + ')');
-        }
-    });
-  
-    $scope.$watch('game_time', function(newValue, oldValue) {
-        if (newValue !== oldValue && newValue != null && 
-            newValue[0] !== "" && newValue[1] !== "" && 
-            !isNaN(parseInt(newValue[0])) && isFinite(newValue[0]) &&
-            !isNaN(parseInt(newValue[1])) && isFinite(newValue[1])) {
-            bngApi.engineLua('extensions.Nickel.setTime(' + newValue[0] + ', ' + newValue[1] + ')');
-        }
-    }, true);
-  
-    $scope.$watch('game_wind', function (newValue, oldValue) {
-        if (newValue !== oldValue && newValue != null && newValue !== "" && !isNaN(parseFloat(newValue)) && isFinite(newValue)) {
-            bngApi.engineLua('extensions.Nickel.setWind(' + newValue + ',' + newValue + ',' + newValue + ')');
-        }
-    });
-    $scope.$watch('game_meteo', function(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        bngApi.engineLua('extensions.Nickel.setMeteo("' + newValue + '")')
-      }
-    }); 
+    // let lastSentWind = null;
+    // $scope.$watch('game_wind', function (newValue, oldValue) {
+    //     if (newValue !== oldValue && newValue != null && newValue !== "" &&
+    //         !isNaN(parseFloat(newValue)) && isFinite(newValue) &&
+    //         newValue !== lastSentWind) {
+    //         lastSentWind = newValue;
+    //         bngApi.engineLua(`extensions.Nickel.setWind(${newValue}, ${newValue}, ${newValue})`);
+    //     }
+    // });
 
-    // run func every seconds
-    setInterval(function() {
-      
-      bngApi.engineLua('extensions.Nickel.jsUpdateEnvironment()');
-    }, 1000);
-  
+    // let lastSentMeteo = null;
+    // $scope.$watch('game_meteo', function(newValue, oldValue) {
+    //     if (newValue !== oldValue && newValue !== lastSentMeteo) {
+    //         lastSentMeteo = newValue;
+    //         bngApi.engineLua('extensions.Nickel.setMeteo("' + newValue + '")');
+    //     }
+    // });
 
   }
 

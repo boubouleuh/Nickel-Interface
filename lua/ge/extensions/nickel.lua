@@ -110,27 +110,28 @@ end
 
 function setTemp(temp)
     environment.temperature = temp
+    updateEnvironment(environment)
 end
 
 function setTime(hours, minutes)
     environment.time = {hours, minutes}
+    updateEnvironment(environment)
 end
 
 function setGravity(grav)
     environment.gravity = grav
+    updateEnvironment(environment)
+
 end
 
 function setWind(x, y, z)
     environment.wind = x
+    updateEnvironment(environment)
    --[[  updateEnvironment({wind = {x, y, z}}) ]]
 end
 
 function setMeteo(meteo)
     environment.meteo = meteo
-end
-
-
-function jsUpdateEnvironment()
     updateEnvironment(environment)
 end
 
@@ -162,7 +163,6 @@ function clientSyncEnvironment()
     be:queueAllObjectLua("obj:setWind(0,".. environment.wind..",0)")
     core_environment.requestState()
     core_environment.onInit()
-    TriggerServerEvent('SyncEnvironment', jsonEncode(environment))
 end
 
 
@@ -171,7 +171,7 @@ local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
     environment = newEnv
 
-    updateEnvironment(environment)
+    clientSyncEnvironment()
 end
 
 

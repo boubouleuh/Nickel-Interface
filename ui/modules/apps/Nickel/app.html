@@ -312,11 +312,14 @@
         display: none;
     }
     .nickel-interface .time{
-        grid-template-columns: 0.9fr 23px 0.2fr 23px; /* La première colonne pour l'icône, la deuxième pour l'input */
+        padding-right: 2px;
+        grid-template-columns: 0.9fr 23px 0.2fr; /* La première colonne pour l'icône, la deuxième pour l'input */
     }
 
     .nickel-interface .time-input{
+        grid-column: 3;
         padding: 0;
+        padding-right: 2px;
         padding-left: 2px;
         grid-row: 1;    
         width: 100%;
@@ -324,13 +327,11 @@
         /* justify-self: center; */
         align-self: center;
     }
-    .nickel-interface .time-spacer{
-        grid-column: 1;
-        grid-row: 1;    
-        width: 100%;
+    .nickel-interface .time-input::-webkit-calendar-picker-indicator {
+        display: none;
     }
+
     .nickel-interface .gravity span{
-        padding-left: 40px;
         font-size: 12px !important;
     }
     .nickel-interface .gravity-input{
@@ -340,6 +341,7 @@
         height: 50%;    
         align-self: center;
         margin-left: 30%;
+        margin-right: 75px;
         justify-self: start;
     }
 
@@ -664,8 +666,8 @@
     .nickel-interface .gravity-input:hover + span,
     .nickel-interface .gravity-input:focus + span {
         display: none;
-
     }
+
     .nickel-interface input[type="number"] {
     -webkit-appearance: textfield;
         -moz-appearance: textfield;
@@ -832,24 +834,21 @@
             <div class="actual-infos", style="width: 80%;">
                 <div class="temp">
                     <img src="/ui/modules/apps/Nickel/icons/Temp_icon.svg" alt="icon" class="button-icon">
-                    <input class="temp-input" type="number" name="input" ng-model="game_temp" ng-disabled="!canEditEnvironment" required><span>°C</span>
+                    <input class="temp-input" type="number" name="inputTemp" ng-model="game_temp" ng-disabled="!canEditEnvironment" ng-focus="isTempInputFocused = true" ng-blur="isTempInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateTemp(game_temp)"><span>°C</span>
                 </div>
                 <div class="time">
                     <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
-                    <div class="time-spacer"></div>
-                    <input class="time-input h-input" style="justify-self: end;" type="text" name="input" ng-model="game_time[0]" min="0" max="23" ng-disabled="!canEditEnvironment" required>
-                    <span style="grid-column: 3; margin: 0; padding:0; justify-self: start;">h</span>
-                    <input class="time-input m-input" type="text" name="input" ng-model="game_time[1]" min="0" max="59" ng-disabled="!canEditEnvironment" required> <!-- onchange="if(parseInt(this.value,10)<10 && this.value.length < 2)this.value='0'+this.value;if(this.value == '')this.value='00'" -->
+                    <input class="time-input" type="time" name="inputTime" ng-model="formattedGameTime" ng-disabled="!canEditEnvironment" ng-focus="isTimeInputFocused = true" ng-blur="isTimeInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateTime(formattedGameTime)">
                 </div>
 
                 <div class="gravity">
                     <img src="/ui/modules/apps/Nickel/icons/Gravity_icon.svg" alt="icon" class="button-icon">
-                    <input class="gravity-input" type="text" name="input" ng-model="game_gravity" ng-disabled="!canEditEnvironment" required>
+                    <input class="gravity-input" type="number" name="inputGravity" ng-model="game_gravity" ng-disabled="!canEditEnvironment" ng-focus="isGravityInputFocused = true" ng-blur="isGravityInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateGravity(game_gravity)">
                     <span>m/s²</span>
                 </div>
                 <div class="wind">
                     <img src="/ui/modules/apps/Nickel/icons/Wind_icon.svg" alt="icon" class="button-icon">
-                    <input class="wind-input" type="text" name="input" ng-model="game_wind" ng-disabled="!canEditEnvironment" required>
+                    <input class="wind-input" type="number" name="inputWind" ng-min="0"  ng-model="game_wind" ng-disabled="!canEditEnvironment" ng-focus="isWindInputFocused = true" ng-blur="isWindInputFocused = false" ng-model-options="{ debounce: 500 }"  ng-change="updateWind(game_wind)">
                     <span>mph</span>
                 </div>
                 <div class="meteo">
