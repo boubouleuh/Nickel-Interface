@@ -101,6 +101,103 @@ app.directive('commandInputs', function() {
   };
 });
 
+app.directive('customTimeInput', function () {
+  return {
+    restrict: 'E',
+    scope: {
+      ngModel: '=',           // ← type Date
+      ngDisabled: '=',
+      useAmPm: '=',           // ← true = 12h, false = 24h
+      ngChange: '&',
+      onFocus: '&',
+      onBlur: '&',
+      ngModelOptions: '='
+    },
+    template: `        
+        <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
+
+        <div class="time-spacer"></div>
+        <input class="time-input h-input" style="justify-self: end;" type="number"
+               ng-attr-min="{{useAmPm ? 1 : 0}}"
+               ng-attr-max="{{useAmPm ? 12 : 23}}"
+               ng-disabled="ngDisabled"
+               ng-model="hours"
+               placeholder="HH"
+               ng-focus="onFocus()"
+               ng-blur="onBlur(); debounceChange()" required>
+        <span style="align-self: center;
+        grid-column: 3;
+        margin: 0;
+        padding: 1px;
+        justify-self: start;
+        grid-row: 1;">h</span>
+        <input class="time-input m-input" type="number"
+               min="0" max="59"
+               ng-disabled="ngDisabled"
+               ng-model="minutes"
+               placeholder="MM"
+               ng-focus="onFocus()"
+               ng-blur="onBlur(); debounceChange() " required>
+    `,
+    link: function (scope) {
+      scope.hours = null;
+      scope.minutes = null;
+
+      // Padding util
+      function pad(n) {
+        return n < 10 ? '0' + n : '' + n;
+      }
+
+      // Update ngModel (Date object)
+      scope.updateNgModel = function () {
+        if (!(scope.ngModel instanceof Date)) return;
+
+        let h = parseInt(scope.hours, 10);
+        let m = parseInt(scope.minutes, 10);
+
+        if (isNaN(h) || isNaN(m)) return;
+
+        // Convert 12h to 24h
+        const originalHours = scope.ngModel.getHours();
+        const isPM = originalHours >= 12;
+
+        if (scope.useAmPm) {
+          if (isPM && h < 12) h += 12;
+          if (!isPM && h === 12) h = 0;
+        }
+
+        scope.ngModel.setHours(h);
+        scope.ngModel.setMinutes(m);
+        scope.ngModel.setSeconds(0);
+        scope.ngModel.setMilliseconds(0);
+
+        if (typeof scope.ngChange === 'function') scope.ngChange();
+      };
+
+      // Debounce
+      let debounceMs = (scope.ngModelOptions && scope.ngModelOptions.debounce) || 0;
+      let debounceTimeout;
+      scope.debounceChange = function () {
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(scope.updateNgModel, debounceMs);
+      };
+
+      // Watch ngModel and update input fields
+      scope.$watch('ngModel', function (val) {
+        if (!(val instanceof Date)) return;
+
+        let h = val.getHours();
+        scope.minutes = val.getMinutes();
+
+        if (scope.useAmPm) {
+          scope.hours = (h % 12) || 12;
+        } else {
+          scope.hours = h;
+        }
+      });
+    }
+  };
+});
 
 app.directive('clickOutside', ['$document', function($document) {
   return {

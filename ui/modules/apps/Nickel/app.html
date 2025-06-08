@@ -200,7 +200,8 @@
         row-gap: 12%;
         align-self: center;
     }
-    .nickel-interface .actual-infos div{
+    .nickel-interface .actual-infos div,
+    .nickel-interface .actual-infos custom-time-input{
         display: grid;
         background-color: rgba(var(--button-color));
         border-radius: 10px;
@@ -313,11 +314,10 @@
     }
     .nickel-interface .time{
         padding-right: 2px;
-        grid-template-columns: 0.9fr 23px 0.2fr; /* La première colonne pour l'icône, la deuxième pour l'input */
+        grid-template-columns: 0.9fr 23px 0.2fr 23px; /* La première colonne pour l'icône, la deuxième pour l'input */
     }
 
     .nickel-interface .time-input{
-        grid-column: 3;
         padding: 0;
         padding-right: 2px;
         padding-left: 2px;
@@ -327,8 +327,11 @@
         /* justify-self: center; */
         align-self: center;
     }
-    .nickel-interface .time-input::-webkit-calendar-picker-indicator {
-        display: none;
+
+    .nickel-interface .time-spacer{
+        grid-column: 1;
+        grid-row: 1;    
+        width: 100%;
     }
 
     .nickel-interface .gravity span{
@@ -836,10 +839,20 @@
                     <img src="/ui/modules/apps/Nickel/icons/Temp_icon.svg" alt="icon" class="button-icon">
                     <input class="temp-input" type="number" name="inputTemp" ng-model="game_temp" ng-disabled="!canEditEnvironment" ng-focus="isTempInputFocused = true" ng-blur="isTempInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateTemp(game_temp)"><span>°C</span>
                 </div>
-                <div class="time">
-                    <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
-                    <input class="time-input" type="time" name="inputTime" ng-model="formattedGameTime" ng-disabled="!canEditEnvironment" ng-focus="isTimeInputFocused = true" ng-blur="isTimeInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateTime(formattedGameTime)">
-                </div>
+
+                <custom-time-input
+                    class="time"
+                    ng-model="formattedGameTime"
+                    ng-disabled="!canEditEnvironment"
+                    use-am-pm="false"
+                    ng-change="updateTime(formattedGameTime)"
+                    ng-model-options="{ debounce: 500 }"
+                    on-focus="isTimeInputFocused = true"
+                    on-blur="isTimeInputFocused = false">
+                </custom-time-input>
+                    <!-- <input class="time-input" type="time" name="inputTime" ng-model="formattedGameTime" ng-disabled="!canEditEnvironment" ng-focus="isTimeInputFocused = true" ng-blur="isTimeInputFocused = false" ng-model-options="{ debounce: 500 }" ng-change="updateTime(formattedGameTime)"> -->
+
+                
 
                 <div class="gravity">
                     <img src="/ui/modules/apps/Nickel/icons/Gravity_icon.svg" alt="icon" class="button-icon">
