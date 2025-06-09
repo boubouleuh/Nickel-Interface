@@ -15,6 +15,7 @@ local globalcommands = {}
 local interfaceValues = {}
 local bypassNametagsBool = false
 local jsinitiated = false
+local applied_environment = {}
 local environment = {
     temperature = 0,
     time = {0, 0},
@@ -156,6 +157,7 @@ function getMeteo()
 end
 
 function clientSyncEnvironment()
+    applied_environment = deepCopy(environment)
     core_weather.activate(environment.meteo)
     scenetree.TheLevelInfo:setTemperatureCurveC({{0, environment.temperature}, {1, environment.temperature},{0, 0}, {0, 0}, {0, 0}})
     time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2])
@@ -163,12 +165,22 @@ function clientSyncEnvironment()
     be:queueAllObjectLua("obj:setWind(0,".. environment.wind..",0)")
     core_environment.requestState()
     core_environment.onInit()
+
+
 end
 
 
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
+
+    dump(newEnv)
+    dump(applied_environment)
+    if deepCompare(newEnv, applied_environment) then
+        log('D', "Nickel", "Environment already applied, skipping update")
+        return
+    end
+
     environment = newEnv
 
     clientSyncEnvironment()
