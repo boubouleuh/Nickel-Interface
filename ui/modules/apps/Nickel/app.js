@@ -550,20 +550,20 @@ app.directive('nickel', [function () {
   };
 
   $scope.updateTemp = function (temp) {
-      if (!temp) return;
+      if (temp == null) return;
       bngApi.engineLua(`extensions.Nickel.setTemp(${temp})`);
     }
 
   $scope.updateGravity = function (gravity) {
     console.log("updateGravity", gravity)
-    if (!gravity) return;
+    if (gravity == null) return;
 
     // Envoie les nouvelles valeurs au backend
     bngApi.engineLua(`extensions.Nickel.setGravity(${gravity})`);
   }
 
   $scope.updateTime = function (time) {
-    if (!time) return;
+    if (time == null) return;
 
     const hours = time.getHours();
     const minutes = time.getMinutes();
@@ -573,14 +573,14 @@ app.directive('nickel', [function () {
   };
 
   $scope.updateWind = function (wind) {
-    if (!wind) return;
+    if (wind == null) return;
 
     // Envoie les nouvelles valeurs au backend
     bngApi.engineLua(`extensions.Nickel.setWind(${wind}, ${wind}, ${wind})`);
   };
 
   $scope.updateMeteo = function (meteo) {
-    if (!meteo) return;
+    if (meteo == null) return;
 
     // Envoie les nouvelles valeurs au backend
     bngApi.engineLua(`extensions.Nickel.setMeteo("${meteo}")`);

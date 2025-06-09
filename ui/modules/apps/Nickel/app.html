@@ -868,7 +868,7 @@
                     <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
 
                 
-                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input" ng-disabled="!canEditEnvironment">
+                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input" ng-disabled="!canEditEnvironment" ng-change="updateMeteo(game_meteo)" ng-focus="isMeteoInputFocused = true" ng-blur="isMeteoInputFocused = false">
                         <md-select-value>{{ game_meteo }}</md-select-value>
                         <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
                     </md-select>
