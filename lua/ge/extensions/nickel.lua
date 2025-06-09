@@ -54,7 +54,6 @@ local function updateEnvironment(newEnv)
     
     if hasChanged then
         TriggerServerEvent("SyncEnvironment", jsonEncode(environment))
-        guihooks.trigger('SyncEnvironment', environment)
     end 
 end
 
@@ -173,17 +172,15 @@ end
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
-
-    dump(newEnv)
-    dump(applied_environment)
     if deepCompare(newEnv, applied_environment) then
         log('D', "Nickel", "Environment already applied, skipping update")
         return
     end
-
     environment = newEnv
 
     clientSyncEnvironment()
+    guihooks.trigger('SyncEnvironment', environment)
+
 end
 
 
