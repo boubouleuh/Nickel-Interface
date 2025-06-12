@@ -157,15 +157,13 @@ end
 
 function clientSyncEnvironment()
     applied_environment = deepCopy(environment)
-    core_weather.activate(environment.meteo)
+    -- core_weather.activate(environment.meteo)
     scenetree.TheLevelInfo:setTemperatureCurveC({{0, environment.temperature}, {1, environment.temperature},{0, 0}, {0, 0}, {0, 0}})
-    time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2])
+    time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2], false)
     core_environment.setGravity(environment.gravity)
     be:queueAllObjectLua("obj:setWind(0,".. environment.wind..",0)")
     core_environment.requestState()
     core_environment.onInit()
-
-
 end
 
 
