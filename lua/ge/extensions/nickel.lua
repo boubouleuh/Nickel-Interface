@@ -218,11 +218,12 @@ function formatTimeOfDay(value)
     return formatted_time
 end
 
-local function initializeInterface(offset)
+local function initializeInterface()
+    local offset = 0
     isSearching = false
     searchPlayerlist = {}
     if not initialized then
-        log('D', "Nickel", "Initialized interface via AngularJS")
+        -- log('D', "Nickel", "Initialized interface via AngularJS")
         log('D', "Nickel", "Offset is " .. offset)
         TriggerServerEvent("initInterface", offset)
         initialized = true
@@ -237,6 +238,13 @@ local function initializeInterface(offset)
     guihooks.trigger("NKgetGlobalCommands", globalcommands)
     guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 
+end
+
+local function onUiChangedState(curUIState, prevUIState)
+    if curUIState == "play" then
+        M.initializeInterface()
+        jsinitiated = true
+    end
 end
 
 local function resetPlayerList()
@@ -363,12 +371,7 @@ local function sendCommand(command, args)
 end
 
 local function initiate()
-    jsinitiated = true
-    M.checkInitiate()
-end
-
-local function checkInitiate()
-    guihooks.trigger("NKisInitiated", jsinitiated)
+    guihooks.trigger("nkinit", jsinitiated)
 end
 
 local function bypassNametags(value)
@@ -379,7 +382,6 @@ local function bypassNametags(value)
         bypassNametagsBool = false
     end
 end
-
 AddEventHandler("getInterfaceValues", getInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
@@ -395,7 +397,6 @@ AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events hand
 AddEventHandler("bypassNametags", bypassNametags)
 M.NKgetPlayers = NKgetPlayers
 M.syncInterfaceValues = SyncInterfaceValues
-M.checkInitiate = checkInitiate
 M.initiate = initiate
 M.sendCommand = sendCommand
 M.getUserCommands = getUserCommands
@@ -413,8 +414,6 @@ M.setTemp = setTemp
 M.setWind = setWind
 M.setGravity = setGravity
 M.setTime = setTime
-M.jsUpdateEnvironment = jsUpdateEnvironment
-M.emptyPlayerList = emptyPlayerList
 M.NKgetUserValues = NKgetUserValues
 M.NKgetServerValues = NKgetServerValues
 M.updatePlayerList = updatePlayerList
@@ -425,6 +424,7 @@ M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
 M.onWorldReadyState = onWorldReadyState
+M.onUiChangedState = onUiChangedState
 M.onInit = function() setExtensionUnloadMode(M, "manual") end
 
 return M

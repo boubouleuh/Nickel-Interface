@@ -258,25 +258,19 @@ app.directive('nickel', [function () {
 
 
   $scope.nkinit = function() {
-      $scope.$apply(() => {
-        $scope.initiated = true
-      })
-      console.log("NKinit triggered")
-      bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+      if ($scope.initiated) {
+        console.log("NKinit triggered")
+        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+      }
   }
 
-
-
-  bngApi.engineLua('extensions.Nickel.checkInitiate()')
-
+  bngApi.engineLua('extensions.Nickel.initiate()')
+  
   // called on load
-  $scope.$on('NKisInitiated', function (event, data) {
-    $scope.$apply(() => {
-      $scope.initiated = data
-    });
-
-    if ($scope.initiated){
-        $scope.nkinit()
+  $scope.$on('nkinit', function (event, data) {
+    if (data) {
+        console.log("NKinit triggered")
+        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
     }
   });
 
@@ -354,10 +348,6 @@ app.directive('nickel', [function () {
    
       console.log(data)
     });
-    if (!$scope.initiated){
-      bngApi.engineLua('extensions.Nickel.initiate()')
-      $timeout($scope.nkinit, 1000) // Call nkinit after 1 second
-    }
   });
   $scope.$on('getRoles', function (event, data) {
     $scope.$apply(() => {
