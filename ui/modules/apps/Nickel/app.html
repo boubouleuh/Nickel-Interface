@@ -362,7 +362,7 @@
         justify-self: start;
     }
 
-    .nickel-interface .meteo-input{
+    .nickel-interface .weather-input{
         display: flex;
         grid-column: 1;
         grid-row: 1;    
@@ -373,7 +373,7 @@
         margin-left: 33%;
     }
 
-    .nickel-interface .meteo-input .md-select-value {
+    .nickel-interface .weather-input .md-select-value {
         min-width: 0;
         width: 100%;
         padding-right: 0;
@@ -382,7 +382,7 @@
         padding: 0 !important;
     }
 
-    .nickel-interface .meteo-input .md-select-value span {
+    .nickel-interface .weather-input .md-select-value span {
         display: contents;
 
         overflow: hidden;
@@ -392,7 +392,7 @@
         width: 100%;
     }
 
-    .nickel-interface .meteo-input .md-select-icon {
+    .nickel-interface .weather-input .md-select-icon {
         display: none;
     }
 
@@ -864,12 +864,12 @@
                     <input class="wind-input" type="number" name="inputWind" ng-min="0"  ng-model="game_wind" ng-disabled="!canEditEnvironment" ng-focus="isWindInputFocused = true" ng-blur="isWindInputFocused = false" ng-model-options="{ debounce: 500 }"  ng-change="updateWind(game_wind)">
                     <span>mph</span>
                 </div>
-                <div class="meteo">
-                    <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
+                <div class="weather">
+                    <img src="/ui/modules/apps/Nickel/icons/Weather_icon.svg" alt="icon" class="button-icon">
 
-                
-                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input" ng-disabled="!canEditEnvironment" ng-change="updateMeteo(game_meteo)" ng-focus="isMeteoInputFocused = true" ng-blur="isMeteoInputFocused = false">
-                        <md-select-value>{{ game_meteo }}</md-select-value>
+
+                    <md-select ng-model="game_weather" ng-init="hideSelectIcon()" class="weather-input" ng-disabled="!canEditEnvironment" ng-change="updateWeather(game_weather)" ng-focus="isWeatherInputFocused = true" ng-blur="isWeatherInputFocused = false">
+                        <md-select-value>{{ game_weather }}</md-select-value>
                         <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
                     </md-select>
                 </div>
