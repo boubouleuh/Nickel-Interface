@@ -449,19 +449,24 @@ app.directive('nickel', [function () {
       $scope.openApp();
     }
   }
+
   $scope.closeApp = function() {
-      let element = document.querySelector("." + $scope.currentPage + "-container")
-      let element2 = document.querySelector(".arrow-icon")
+      let elements = document.querySelectorAll("[data-page]");
+      elements.forEach(element => {
+            element.classList.add("NKclosed");
+      });
+      let element2 = document.querySelector(".arrow-icon");
       localStorage.setItem("NKclosed", "true");
       element2.classList.add("arrow-icon-reverse")
-      element.classList.add("NKclosed")
   }
   $scope.openApp = function() {
-      let element = document.querySelector("." + $scope.currentPage + "-container")
+      let elements = document.querySelectorAll("[data-page]");
+      elements.forEach(element => {
+            element.classList.remove("NKclosed");
+      });
       let element2 = document.querySelector(".arrow-icon")
       localStorage.setItem("NKclosed", "false");
       element2.classList.remove("arrow-icon-reverse")
-      element.classList.remove("NKclosed")
   }
 
   if (localStorage.getItem("NKclosed") == "false"){
@@ -538,6 +543,11 @@ app.directive('nickel', [function () {
 
   $scope.selectGlobalCommand = function(commandName) {
     console.log("selectGlobalCommand", commandName)
+    //if no args in command
+    if (!$scope.global_commands[commandName].args || Object.keys($scope.global_commands[commandName].args).length === 0) {
+      $scope.sendGlobalCommand(commandName);
+      return;
+    }
     $scope.hideGlobalCommandInputs = false;
     $scope.selectedGlobalCommand = $scope.global_commands[commandName];
     $scope.selectedGlobalCommand.name = commandName;

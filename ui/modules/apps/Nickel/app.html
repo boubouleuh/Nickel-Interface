@@ -239,6 +239,9 @@
         grid-row: 2/4;
         grid-column: 1;
     }
+    .nickel-interface .commands .category-content::-webkit-scrollbar {
+        width: 0;
+    }
     .nickel-interface .category{
         margin-top: 30px;
         display: grid;
@@ -716,7 +719,7 @@
     </command-inputs>
     <!-- TODO : add global command inputs -->
 
-    <div ng-class="{'hidden': currentPage !== 'main'}" style="width: 100%; height: 90%;" class="main-container">
+    <div ng-class="{'hidden': currentPage !== 'main'}" style="width: 100%; height: 90%;" class="main-container" data-page="main">
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
@@ -818,11 +821,8 @@
 
         <div style="width: 100%; height: fit-content;" class="server-info box">
             <div class="title-bar" style="width: 100%; height: 40px;">
-                    <span>Server infos</span>
+                    <span>Server</span>
             </div>
-
-            <span class="info">Name : {{nkserver_name}}</span>
-            <span class="info">Version : {{nkserver_version}}</span>
 
             <div class="extensions", style="width: 80%;">
                 <img src="/ui/modules/apps/Nickel/icons/Ext_icon.svg" alt="extension icon" class="top-left-icon">
@@ -889,7 +889,7 @@
                     <div class="category-line"></div>
                 </div>
         
-                <div class="category-content" style="width: 90%">
+                <div class="category-content" style="width: 90%; overflow-y: auto;">
                     <div class="command-button anim-button" ng-repeat="(commandName, commandData) in commands" ng-click="selectGlobalCommand(commandName)">
                         <span>{{commandName}}</span>
                     </div>
@@ -899,9 +899,7 @@
     </div>
 
 
-    <div ng-class="{'hidden': currentPage === 'main'}" style="width: 100%; height: 90%;" class="settings-container">
-    
-        
+    <div ng-class="{'hidden': currentPage === 'main'}" style="width: 100%; height: 90%;" class="settings-container" data-page="settings">
 
         <div class="settings box" style="width: 100%; height: 100%;">
             <div class="title-bar" style="width: 100%; height: 40px;">
