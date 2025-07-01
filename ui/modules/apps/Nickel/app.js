@@ -115,63 +115,63 @@ app.directive('customTimeInput', function () {
     },
     template: `        
         <img src="/ui/modules/apps/Nickel/icons/Time_icon.svg" alt="icon" class="button-icon">
-
         <div class="time-spacer"></div>
-        <input class="time-input h-input" style="justify-self: end;" type="number"
-               ng-attr-min="{{useAmPm ? 1 : 0}}"
-               ng-attr-max="{{useAmPm ? 12 : 23}}"
+        <input class="time-input h-input" style="justify-self: end;" type="text"
                ng-disabled="ngDisabled"
                ng-model="hours"
-               placeholder="HH"
                ng-focus="onFocus()"
-               ng-blur="onBlur(); debounceChange()" required>
-        <span style="align-self: center;
-        grid-column: 3;
-        margin: 0;
-        padding: 1px;
-        justify-self: start;
-        grid-row: 1;">h</span>
-        <input class="time-input m-input" type="number"
-               min="0" max="59"
+               ng-blur="onBlur(); padAndUpdate('hours'); debounceChange()" maxlength="2" size="2" required>
+        <span style="align-self: center; grid-column: 3; margin: 0; padding: 1px; justify-self: start; grid-row: 1;">h</span>
+        <input class="time-input m-input" type="text"
                ng-disabled="ngDisabled"
                ng-model="minutes"
-               placeholder="MM"
                ng-focus="onFocus()"
-               ng-blur="onBlur(); debounceChange() " required>
+               ng-blur="onBlur(); padAndUpdate('minutes'); debounceChange()" maxlength="2" size="2" required>
     `,
-    link: function (scope) {
-      scope.hours = null;
-      scope.minutes = null;
-
+    link: function (scope, element) {
       // Padding util
       function pad(n) {
-        return n < 10 ? '0' + n : '' + n;
+        n = parseInt(n, 10);
+        if (isNaN(n)) return '00';
+        return n < 10 ? '0' + n : (n > 99 ? '99' : '' + n);
       }
 
-      // Update ngModel (Date object)
+      // Met à jour l'affichage (inputs) depuis le modèle Date
+      function syncInputsFromModel(date) {
+        if (!(date instanceof Date)) return;
+        let h = date.getHours();
+        let m = date.getMinutes();
+        if (scope.useAmPm) h = (h % 12) || 12;
+        scope.hours = pad(h);
+        scope.minutes = pad(m);
+      }
+
+      // Met à jour le modèle Date depuis les inputs
       scope.updateNgModel = function () {
         if (!(scope.ngModel instanceof Date)) return;
-
         let h = parseInt(scope.hours, 10);
         let m = parseInt(scope.minutes, 10);
-
         if (isNaN(h) || isNaN(m)) return;
-
         // Convert 12h to 24h
-        const originalHours = scope.ngModel.getHours();
-        const isPM = originalHours >= 12;
-
+        let origH = scope.ngModel.getHours();
+        let isPM = origH >= 12;
         if (scope.useAmPm) {
           if (isPM && h < 12) h += 12;
           if (!isPM && h === 12) h = 0;
         }
-
         scope.ngModel.setHours(h);
         scope.ngModel.setMinutes(m);
         scope.ngModel.setSeconds(0);
         scope.ngModel.setMilliseconds(0);
-
         if (typeof scope.ngChange === 'function') scope.ngChange();
+        // On resynchronise l'affichage pour forcer le padding
+        syncInputsFromModel(scope.ngModel);
+      };
+
+      // Padding et correction à chaque blur
+      scope.padAndUpdate = function (field) {
+        if (field === 'hours') scope.hours = pad(scope.hours);
+        if (field === 'minutes') scope.minutes = pad(scope.minutes);
       };
 
       // Debounce
@@ -182,19 +182,70 @@ app.directive('customTimeInput', function () {
         debounceTimeout = setTimeout(scope.updateNgModel, debounceMs);
       };
 
-      // Watch ngModel and update input fields
+      // Un seul watch sur ngModel
       scope.$watch('ngModel', function (val) {
-        if (!(val instanceof Date)) return;
-
-        let h = val.getHours();
-        scope.minutes = val.getMinutes();
-
-        if (scope.useAmPm) {
-          scope.hours = (h % 12) || 12;
-        } else {
-          scope.hours = h;
-        }
+        syncInputsFromModel(val);
       });
+
+      function setupTimeInput(inputClass, inputName, max) {
+        let input = element[0].querySelector('.' + inputClass + '-input');
+
+        function sanitizeValue(val) {
+          val = (val == null) ? '' : String(val);
+          return val.replace(/\D/g, '').slice(0, 2);
+        }
+        function padValue(val) {
+          let v = sanitizeValue(val);
+          if (v === '') v = '00';
+          else if (v.length === 1) v = '0' + v;
+          let n = parseInt(v, 10);
+          if (isNaN(n)) n = 0;
+          if (n > max) n = max;
+          return n < 10 ? '0' + n : '' + n;
+        }
+        function setValue(val, updateModel = false) {
+          let padded = padValue(val);
+          input.value = padded;
+          scope[inputName] = padded;
+          if (updateModel) scope.updateNgModel();
+          scope.$applyAsync();
+        }
+        function changeValue(delta) {
+          let n = parseInt(sanitizeValue(input.value), 10);
+          if (isNaN(n)) n = 0;
+          n += delta;
+          if (n > max) n = 0;
+          if (n < 0) n = max;
+          setValue(n, true);
+          setTimeout(() => input.select(), 0);
+        }
+
+        input.addEventListener('input', function () {
+          let v = sanitizeValue(this.value);
+          this.value = v;
+          scope[inputName] = v;
+          scope.$applyAsync();
+        });
+        input.addEventListener('focus', function () {
+          setTimeout(() => this.select(), 0);
+        });
+        input.addEventListener('blur', function () {
+          setValue(this.value, true);
+        });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            changeValue(e.key === 'ArrowUp' ? 1 : -1);
+          }
+        });
+        input.addEventListener('wheel', function (e) {
+          if (document.activeElement !== this) return;
+          e.preventDefault();
+          changeValue(e.deltaY < 0 ? 1 : -1);
+        });
+      }
+      setupTimeInput('h', 'hours', scope.useAmPm ? 12 : 23);
+      setupTimeInput('m', 'minutes', 59);
     }
   };
 });
@@ -258,25 +309,19 @@ app.directive('nickel', [function () {
 
 
   $scope.nkinit = function() {
-      $scope.$apply(() => {
-        $scope.initiated = true
-      })
-      console.log("NKinit triggered")
-      bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+      if ($scope.initiated) {
+        console.log("NKinit triggered")
+        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
+      }
   }
 
+  bngApi.engineLua('extensions.Nickel.initiate()')
 
-
-  bngApi.engineLua('extensions.Nickel.checkInitiate()')
-
-  // called on load
-  $scope.$on('NKisInitiated', function (event, data) {
-    $scope.$apply(() => {
-      $scope.initiated = data
-    });
-
-    if ($scope.initiated){
-        $scope.nkinit()
+  // called on load only if the first initialization is done
+  $scope.$on('nkinit', function (event, data) {
+    if (data) {
+        console.log("NKinit triggered")
+        bngApi.engineLua('extensions.Nickel.initializeInterface(0)')
     }
   });
 
@@ -284,6 +329,8 @@ app.directive('nickel', [function () {
     return $sce.trustAsResourceUrl(url);
 
   };
+
+
 
   // $scope.nkplayers = {0:{"name":"bouboule", "roles":{
   //   0:{"roleName":"Administrator", "permlvl":3},
@@ -293,7 +340,7 @@ app.directive('nickel', [function () {
   // $scope.nkroles = {0:{"roleName":"Administrator", "permlvl":3}}
 
   $scope.hideSelectIcon = function() {
-          var icon = document.querySelector('.meteo-input .md-select-icon');
+          var icon = document.querySelector('.weather-input .md-select-icon');
           if (icon) {
               icon.style.display = 'none';
           }
@@ -354,10 +401,6 @@ app.directive('nickel', [function () {
    
       console.log(data)
     });
-    if (!$scope.initiated){
-      bngApi.engineLua('extensions.Nickel.initiate()')
-      $timeout($scope.nkinit, 1000) // Call nkinit after 1 second
-    }
   });
   $scope.$on('getRoles', function (event, data) {
     $scope.$apply(() => {
@@ -381,8 +424,8 @@ app.directive('nickel', [function () {
     if (!$scope.isWindInputFocused) {
       $scope.game_wind = data.wind
     }
-    if (!$scope.isMeteoInputFocused) {
-      $scope.game_meteo = data.meteo
+    if (!$scope.isWeatherInputFocused) {
+      $scope.game_weather = data.weather
     }
     if (!$scope.isTimeInputFocused) {
       $scope.game_time = data.time
@@ -400,22 +443,39 @@ app.directive('nickel', [function () {
   });
 
   $scope.resizeApp = function() {
-    let element = document.querySelector("." + $scope.currentPage + "-container")
-    let element2 = document.querySelector(".arrow-icon")
-
     if (localStorage.getItem("NKclosed") == "false"){
-      localStorage.setItem("NKclosed", true);
-      element2.classList.add("arrow-icon-reverse")
-
-      element.classList.add("NKclosed")
+      $scope.closeApp();
     }else{
-      element2.classList.remove("arrow-icon-reverse")
-      element.classList.remove("NKclosed")
-      localStorage.setItem("NKclosed", false);
+      $scope.openApp();
     }
-
-
   }
+
+  $scope.closeApp = function() {
+      let elements = document.querySelectorAll("[data-page]");
+      elements.forEach(element => {
+            element.classList.add("NKclosed");
+      });
+      let element2 = document.querySelector(".arrow-icon");
+      localStorage.setItem("NKclosed", "true");
+      element2.classList.add("arrow-icon-reverse")
+  }
+  $scope.openApp = function() {
+      let elements = document.querySelectorAll("[data-page]");
+      elements.forEach(element => {
+            element.classList.remove("NKclosed");
+      });
+      let element2 = document.querySelector(".arrow-icon")
+      localStorage.setItem("NKclosed", "false");
+      element2.classList.remove("arrow-icon-reverse")
+  }
+
+  if (localStorage.getItem("NKclosed") == "false"){
+    $scope.openApp();
+  }else{
+    $scope.closeApp();
+  }
+
+
   $scope.roleExists = function(roleName, roles) {
     if (!Array.isArray(roles)) {
       return false;
@@ -483,6 +543,11 @@ app.directive('nickel', [function () {
 
   $scope.selectGlobalCommand = function(commandName) {
     console.log("selectGlobalCommand", commandName)
+    //if no args in command
+    if (!$scope.global_commands[commandName].args || Object.keys($scope.global_commands[commandName].args).length === 0) {
+      $scope.sendGlobalCommand(commandName);
+      return;
+    }
     $scope.hideGlobalCommandInputs = false;
     $scope.selectedGlobalCommand = $scope.global_commands[commandName];
     $scope.selectedGlobalCommand.name = commandName;
@@ -579,11 +644,11 @@ app.directive('nickel', [function () {
     bngApi.engineLua(`extensions.Nickel.setWind(${wind}, ${wind}, ${wind})`);
   };
 
-  $scope.updateMeteo = function (meteo) {
-    if (meteo == null) return;
+  $scope.updateWeather = function (weather) {
+    if (weather == null) return;
 
     // Envoie les nouvelles valeurs au backend
-    bngApi.engineLua(`extensions.Nickel.setMeteo("${meteo}")`);
+    bngApi.engineLua(`extensions.Nickel.setWeather("${weather}")`);
   }
 
   const numInputs = document.querySelectorAll('input[type=number]')
@@ -662,7 +727,7 @@ function registerCustomEvents($scope) {
     let playerlist = document.querySelector(".player-list");
     const onscroll = () => {
         const isReachBottom = playerlist.scrollTop + playerlist.clientHeight >= playerlist.scrollHeight;
-        // if (isReachBottom) bngApi.engineLua('extensions.Nickel.updatePlayerList()');
+        // if (isReachBottom) bngApi.engineLua('extensions.Nickel.NKupdatePlayerList()');
          if (isReachBottom) $scope.limit += 30;
     };
     playerlist.addEventListener("scroll", onscroll);
@@ -759,11 +824,11 @@ function registerCustomEvents($scope) {
     //     }
     // });
 
-    // let lastSentMeteo = null;
-    // $scope.$watch('game_meteo', function(newValue, oldValue) {
-    //     if (newValue !== oldValue && newValue !== lastSentMeteo) {
-    //         lastSentMeteo = newValue;
-    //         bngApi.engineLua('extensions.Nickel.setMeteo("' + newValue + '")');
+    // let lastSentweather = null;
+    // $scope.$watch('game_weather', function(newValue, oldValue) {
+    //     if (newValue !== oldValue && newValue !== lastSentweather) {
+    //         lastSentweather = newValue;
+    //         bngApi.engineLua('extensions.Nickel.setWeather("' + newValue + '")');
     //     }
     // });
 

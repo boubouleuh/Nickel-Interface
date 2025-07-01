@@ -239,6 +239,9 @@
         grid-row: 2/4;
         grid-column: 1;
     }
+    .nickel-interface .commands .category-content::-webkit-scrollbar {
+        width: 0;
+    }
     .nickel-interface .category{
         margin-top: 30px;
         display: grid;
@@ -362,7 +365,7 @@
         justify-self: start;
     }
 
-    .nickel-interface .meteo-input{
+    .nickel-interface .weather-input{
         display: flex;
         grid-column: 1;
         grid-row: 1;    
@@ -373,7 +376,7 @@
         margin-left: 33%;
     }
 
-    .nickel-interface .meteo-input .md-select-value {
+    .nickel-interface .weather-input .md-select-value {
         min-width: 0;
         width: 100%;
         padding-right: 0;
@@ -382,7 +385,7 @@
         padding: 0 !important;
     }
 
-    .nickel-interface .meteo-input .md-select-value span {
+    .nickel-interface .weather-input .md-select-value span {
         display: contents;
 
         overflow: hidden;
@@ -392,7 +395,7 @@
         width: 100%;
     }
 
-    .nickel-interface .meteo-input .md-select-icon {
+    .nickel-interface .weather-input .md-select-icon {
         display: none;
     }
 
@@ -716,7 +719,7 @@
     </command-inputs>
     <!-- TODO : add global command inputs -->
 
-    <div ng-class="{'hidden': currentPage !== 'main'}" style="width: 100%; height: 90%;" class="main-container">
+    <div ng-class="{'hidden': currentPage !== 'main'}" style="width: 100%; height: 90%;" class="main-container" data-page="main">
 
         <div style="width: 100%; height: 100%;" class="player-list box">
 
@@ -818,11 +821,8 @@
 
         <div style="width: 100%; height: fit-content;" class="server-info box">
             <div class="title-bar" style="width: 100%; height: 40px;">
-                    <span>Server infos</span>
+                    <span>Server</span>
             </div>
-
-            <span class="info">Name : {{nkserver_name}}</span>
-            <span class="info">Version : {{nkserver_version}}</span>
 
             <div class="extensions", style="width: 80%;">
                 <img src="/ui/modules/apps/Nickel/icons/Ext_icon.svg" alt="extension icon" class="top-left-icon">
@@ -864,12 +864,12 @@
                     <input class="wind-input" type="number" name="inputWind" ng-min="0"  ng-model="game_wind" ng-disabled="!canEditEnvironment" ng-focus="isWindInputFocused = true" ng-blur="isWindInputFocused = false" ng-model-options="{ debounce: 500 }"  ng-change="updateWind(game_wind)">
                     <span>mph</span>
                 </div>
-                <div class="meteo">
-                    <img src="/ui/modules/apps/Nickel/icons/Meteo_icon.svg" alt="icon" class="button-icon">
+                <div class="weather">
+                    <img src="/ui/modules/apps/Nickel/icons/Weather_icon.svg" alt="icon" class="button-icon">
 
-                
-                    <md-select ng-model="game_meteo" ng-init="hideSelectIcon()" class="meteo-input" ng-disabled="!canEditEnvironment" ng-change="updateMeteo(game_meteo)" ng-focus="isMeteoInputFocused = true" ng-blur="isMeteoInputFocused = false">
-                        <md-select-value>{{ game_meteo }}</md-select-value>
+
+                    <md-select ng-model="game_weather" ng-init="hideSelectIcon()" class="weather-input" ng-disabled="!canEditEnvironment" ng-change="updateWeather(game_weather)" ng-focus="isWeatherInputFocused = true" ng-blur="isWeatherInputFocused = false">
+                        <md-select-value>{{ game_weather }}</md-select-value>
                         <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
                     </md-select>
                 </div>
@@ -889,7 +889,7 @@
                     <div class="category-line"></div>
                 </div>
         
-                <div class="category-content" style="width: 90%">
+                <div class="category-content" style="width: 90%; overflow-y: auto;">
                     <div class="command-button anim-button" ng-repeat="(commandName, commandData) in commands" ng-click="selectGlobalCommand(commandName)">
                         <span>{{commandName}}</span>
                     </div>
@@ -899,9 +899,7 @@
     </div>
 
 
-    <div ng-class="{'hidden': currentPage === 'main'}" style="width: 100%; height: 90%;" class="settings-container">
-    
-        
+    <div ng-class="{'hidden': currentPage === 'main'}" style="width: 100%; height: 90%;" class="settings-container" data-page="settings">
 
         <div class="settings box" style="width: 100%; height: 100%;">
             <div class="title-bar" style="width: 100%; height: 40px;">

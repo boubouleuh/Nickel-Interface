@@ -10,6 +10,7 @@ local isSearching = false
 local serverinfos = {}
 local self_action_perm = {}
 local time = require("ge.extensions.beamng.time")
+local weather = require("ge.extensions.beamng.weather")
 local usercommands = {}
 local globalcommands = {}
 local interfaceValues = {}
@@ -21,14 +22,14 @@ local environment = {
     time = {0, 0},
     gravity = 0,
     wind = 0,
-    meteo = ""
+    weather = ""
 }
 local lastEnvironment = {
     temperature = 0,
     time = {0, 0},
     gravity = 0,
     wind = 0,
-    meteo = ""
+    weather = ""
 }
 
 local weatherPresets
@@ -56,7 +57,6 @@ local function updateEnvironment(newEnv)
         TriggerServerEvent("SyncEnvironment", jsonEncode(environment))
     end 
 end
-
 
 
 
@@ -130,8 +130,8 @@ function setWind(x, y, z)
    --[[  updateEnvironment({wind = {x, y, z}}) ]]
 end
 
-function setMeteo(meteo)
-    environment.meteo = meteo
+function setWeather(weather)
+    environment.weather = weather
     updateEnvironment(environment)
 end
 
@@ -151,13 +151,13 @@ function getWind()
     return environment.wind
 end
 
-function getMeteo()
-    return environment.meteo
+function getWeather()
+    return environment.weather
 end
 
 function clientSyncEnvironment()
     applied_environment = deepCopy(environment)
-    -- core_weather.activate(environment.meteo)
+    weather.activate(environment.weather)
     scenetree.TheLevelInfo:setTemperatureCurveC({{0, environment.temperature}, {1, environment.temperature},{0, 0}, {0, 0}, {0, 0}})
     time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2], false)
     core_environment.setGravity(environment.gravity)
@@ -185,6 +185,7 @@ end
 
 local function onExtensionLoaded()
     log('D', "Nickel", "Loaded")
+    weather.onExtensionLoaded()
 end
 
 local function onExtensionUnloaded()
@@ -218,16 +219,17 @@ function formatTimeOfDay(value)
     return formatted_time
 end
 
-local function initializeInterface(offset)
+local function initializeInterface()
+    local offset = 0
     isSearching = false
     searchPlayerlist = {}
     if not initialized then
-        log('D', "Nickel", "Initialized interface via AngularJS")
+        -- log('D', "Nickel", "Initialized interface via AngularJS")
         log('D', "Nickel", "Offset is " .. offset)
         TriggerServerEvent("initInterface", offset)
         initialized = true
     end
-    guihooks.trigger('SyncWeatherPresets', core_weather.getPresets())
+    guihooks.trigger('SyncWeatherPresets', weather.getPresets())
     guihooks.trigger('SyncEnvironment', environment)
     guihooks.trigger("NKgetServerValues", serverinfos)
     guihooks.trigger("NKgetUserValues", self_action_perm)
@@ -237,6 +239,13 @@ local function initializeInterface(offset)
     guihooks.trigger("NKgetGlobalCommands", globalcommands)
     guihooks.trigger("NKgetInterfaceValues", interfaceValues)
 
+end
+
+local function onUiChangedState(curUIState, prevUIState)
+    if curUIState == "play" then
+        M.initializeInterface()
+        jsinitiated = true
+    end
 end
 
 local function resetPlayerList()
@@ -260,7 +269,7 @@ local function searchPlayer(search)
 end
 
 
-local function updatePlayerList()
+local function NKupdatePlayerList()
     TriggerServerEvent("initInterface", #playerlist)
 end
 
@@ -363,12 +372,7 @@ local function sendCommand(command, args)
 end
 
 local function initiate()
-    jsinitiated = true
-    M.checkInitiate()
-end
-
-local function checkInitiate()
-    guihooks.trigger("NKisInitiated", jsinitiated)
+    guihooks.trigger("nkinit", jsinitiated)
 end
 
 local function bypassNametags(value)
@@ -379,7 +383,6 @@ local function bypassNametags(value)
         bypassNametagsBool = false
     end
 end
-
 AddEventHandler("getInterfaceValues", getInterfaceValues)
 AddEventHandler("clientSyncEnvironment", clientSyncEnvironment)
 AddEventHandler("receiveEnvironment", receiveEnvironment)
@@ -395,7 +398,6 @@ AddEventHandler("NKgetGlobalCommands", getGlobalCommands) -- Add our events hand
 AddEventHandler("bypassNametags", bypassNametags)
 M.NKgetPlayers = NKgetPlayers
 M.syncInterfaceValues = SyncInterfaceValues
-M.checkInitiate = checkInitiate
 M.initiate = initiate
 M.sendCommand = sendCommand
 M.getUserCommands = getUserCommands
@@ -404,20 +406,18 @@ M.getInterfaceValues = getInterfaceValues
 M.addRole = addRole
 M.removeRole = removeRole
 M.getTemp = getTemp
-M.getMeteo = getMeteo
+M.getWeather = getWeather
 M.getWind = getWind
 M.getGravity = getGravity
 M.getTime = getTime
-M.setMeteo = setMeteo
+M.setWeather = setWeather
 M.setTemp = setTemp
 M.setWind = setWind
 M.setGravity = setGravity
 M.setTime = setTime
-M.jsUpdateEnvironment = jsUpdateEnvironment
-M.emptyPlayerList = emptyPlayerList
 M.NKgetUserValues = NKgetUserValues
 M.NKgetServerValues = NKgetServerValues
-M.updatePlayerList = updatePlayerList
+M.NKupdatePlayerList = NKupdatePlayerList
 M.searchPlayer = searchPlayer
 M.resetSearch = resetSearch
 M.resetPlayerList = resetPlayerList
@@ -425,6 +425,10 @@ M.initializeInterface = initializeInterface
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
 M.onWorldReadyState = onWorldReadyState
+M.onUiChangedState = onUiChangedState
+M.onPreRender = weather.onPreRender
+M.onClientPostStartMission = weather.onClientPostStartMission
+M.dumpWeather = weather.dumpWeather
+-- M.dependencies = {"beamng_weather"}
 M.onInit = function() setExtensionUnloadMode(M, "manual") end
-
 return M
