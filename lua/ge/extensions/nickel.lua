@@ -307,7 +307,7 @@ local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
     local list = isSearching and searchPlayerlist or playerlist
 
-    for i, player in ipairs(finaldata) do
+    for _, player in ipairs(finaldata) do
         local updated = false
         -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
         for i, v in ipairs(list) do
@@ -323,6 +323,7 @@ local function NKinsertPlayers(data)
             table.insert(list, player)
         end
     end
+    M.NKgetPlayers()
 end
 
 local function NKgetPlayers()
