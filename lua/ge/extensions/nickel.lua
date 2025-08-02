@@ -54,7 +54,7 @@ local function updateEnvironment(newEnv)
     end
     
     if hasChanged then
-        TriggerServerEvent("SyncEnvironment", jsonEncode(environment))
+        TriggerServerEvent("syncEnvironment", jsonEncode(environment))
     end 
 end
 
@@ -157,7 +157,7 @@ end
 
 function clientSyncEnvironment()
     applied_environment = deepCopy(environment)
-    weather.activate(environment.weather)
+    -- weather.activate(environment.weather)
     scenetree.TheLevelInfo:setTemperatureCurveC({{0, environment.temperature}, {1, environment.temperature},{0, 0}, {0, 0}, {0, 0}})
     time.setTimeOfDay(environment.time[1] .. ":" .. environment.time[2], false)
     core_environment.setGravity(environment.gravity)
@@ -177,7 +177,7 @@ local function receiveEnvironment(newEnv)
     environment = newEnv
 
     clientSyncEnvironment()
-    guihooks.trigger('SyncEnvironment', environment)
+    guihooks.trigger('syncEnvironment', environment)
 
 end
 
@@ -353,7 +353,7 @@ local function SyncInterfaceValues(key, value)
     local newInterfaceValues = interfaceValues
     newInterfaceValues[key] = value
     local newInterfaceValuesJson = jsonEncode(newInterfaceValues)
-    TriggerServerEvent("SyncInterfaceValues", newInterfaceValuesJson)
+    TriggerServerEvent("syncInterfaceValues", newInterfaceValuesJson)
 end
 
 
