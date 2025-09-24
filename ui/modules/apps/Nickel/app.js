@@ -430,8 +430,10 @@ app.directive('nickel', [function () {
     if (!$scope.isTimeInputFocused) {
       $scope.game_time = data.time
     }
-    const [hours, minutes] = data.time;
-    $scope.formattedGameTime = new Date(1970, 0, 1, hours, minutes, 0);
+    if (Array.isArray(data.time) && data.time.length >= 2) {
+      const [hours, minutes] = data.time;
+      $scope.formattedGameTime = new Date(1970, 0, 1, hours, minutes, 0);
+    }
     });
 
     

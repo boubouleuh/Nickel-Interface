@@ -170,14 +170,19 @@ end
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
+    log('D', "Nickel", "Received environment: " .. jsonEncode(newEnv))
+    log('D', "Nickel", "Applied environment: " .. jsonEncode(applied_environment))
+    
     if deepCompare(newEnv, applied_environment) then
         log('D', "Nickel", "Environment already applied, skipping update")
         return
     end
+    
+    log('D', "Nickel", "Applying new environment")
     environment = newEnv
 
     clientSyncEnvironment()
-    guihooks.trigger('syncEnvironment', environment)
+    guihooks.trigger('SyncEnvironment', environment)
 
 end
 
