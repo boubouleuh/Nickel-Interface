@@ -117,11 +117,15 @@
         
         display: grid;
         align-items: center;
-        grid-template-columns: 1fr 1fr 0.5fr 1fr;
+        grid-template-columns: 1fr 0.5fr 0.5fr 1fr 0.5fr;;
         border-collapse: separate; 
         background-color: rgba(var(--main-container-color));
         border-radius: 15px;
         margin-bottom: 5px;
+    }
+
+    .nickel-interface .clickable-icon{
+        cursor: pointer;
     }
 
     .nickel-interface .arrow-icon{
@@ -652,6 +656,9 @@
     .nickel-interface .discord-icon{
         transform: scale(1.2);
     }
+    .nickel-interface .nickel-icon{
+        justify-self: center;
+    }
     md-select-menu > md-content{
         background-color: rgba(var(--dropdown-color)) !important;
     }
@@ -690,14 +697,15 @@
     </style>
     <div style="width: 100%; height: 40px;" class="top-bar-container">
 
-        <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="top-bar-icon" ng-if="currentPage === 'main'" ng-click="switchPage('settings')">
-        <img src="/ui/modules/apps/Nickel/icons/home_icon.svg" alt="home icon" class="top-bar-icon" ng-if="currentPage != 'main'" ng-click="switchPage('main')">
-        <img ng-click="resizeApp()" src="/ui/modules/apps/Nickel/icons/arrow_icon.svg" alt="arrow icon" class="top-bar-icon arrow-icon">
-        <img src="/ui/modules/apps/Nickel/icons/discord_icon.svg" alt="discord icon" class="top-bar-icon discord-icon" onclick="openDiscordLink()">
+        <img src="/ui/modules/apps/Nickel/icons/settings_icon.svg" alt="settings icon" class="clickable-icon top-bar-icon" ng-if="currentPage === 'main'" ng-click="switchPage('settings')">
+        <img src="/ui/modules/apps/Nickel/icons/home_icon.svg" alt="home icon" class="clickable-icon top-bar-icon" ng-if="currentPage != 'main'" ng-click="switchPage('main')">
+        <img ng-click="resizeApp()" src="/ui/modules/apps/Nickel/icons/arrow_icon.svg" alt="arrow icon" class="clickable-icon top-bar-icon arrow-icon">
+        <img src="/ui/modules/apps/Nickel/icons/discord_icon.svg" alt="discord icon" class="clickable-icon top-bar-icon discord-icon" onclick="openDiscordLink()">
         <div class="search-container">
             <input type="search" name="search" id="NKsearch" ng-model="search" placeholder="Search" class="search-input">
             <img src="/ui/modules/apps/Nickel/icons/search_icon.svg" alt="search icon" class="search-icon">
         </div>
+        <img src="/ui/modules/apps/Nickel/icons/nickel.png" alt="nickel icon" class="top-bar-icon nickel-icon">
     </div>
 
     <command-inputs 
@@ -864,7 +872,7 @@
                     <input class="wind-input" type="number" name="inputWind" ng-min="0"  ng-model="game_wind" ng-disabled="!canEditEnvironment" ng-focus="isWindInputFocused = true" ng-blur="isWindInputFocused = false" ng-model-options="{ debounce: 500 }"  ng-change="updateWind(game_wind)">
                     <span>mph</span>
                 </div>
-                <div class="weather">
+                <!-- <div class="weather">
                     <img src="/ui/modules/apps/Nickel/icons/Weather_icon.svg" alt="icon" class="button-icon">
 
 
@@ -872,7 +880,7 @@
                         <md-select-value>{{ game_weather }}</md-select-value>
                         <md-option ng-value="preset" ng-repeat="preset in weatherPresets">{{ preset }}</md-option>
                     </md-select>
-                </div>
+                </div> -->
             </div>
 
 

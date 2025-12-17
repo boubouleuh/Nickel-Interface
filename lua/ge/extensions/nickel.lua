@@ -170,15 +170,10 @@ end
 
 local function receiveEnvironment(newEnv)
     newEnv = jsonDecode(newEnv)
-    log('D', "Nickel", "Received environment: " .. jsonEncode(newEnv))
-    log('D', "Nickel", "Applied environment: " .. jsonEncode(applied_environment))
-    
     if deepCompare(newEnv, applied_environment) then
         log('D', "Nickel", "Environment already applied, skipping update")
         return
     end
-    
-    log('D', "Nickel", "Applying new environment")
     environment = newEnv
 
     clientSyncEnvironment()
@@ -311,7 +306,7 @@ end
 local function NKinsertPlayers(data)
     local finaldata = jsonDecode(data)
     local list = isSearching and searchPlayerlist or playerlist
-
+    print("triggered NKinsertPlayers with " .. #finaldata .. " players")
     for _, player in ipairs(finaldata) do
         local updated = false
         -- Vérifie si le joueur existe déjà et le met à jour si nécessaire
@@ -333,6 +328,7 @@ end
 
 local function NKgetPlayers()
     local list = isSearching and searchPlayerlist or playerlist
+    dump(list)
     guihooks.trigger("getPlayers", list)
 end
 

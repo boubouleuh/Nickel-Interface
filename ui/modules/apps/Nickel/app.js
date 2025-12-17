@@ -379,6 +379,7 @@ app.directive('nickel', [function () {
 
 
   $scope.$on('getPlayers', function (event, data) {
+    console.log("getPlayers triggered", data)
     $scope.$apply(() => {
       $scope.nkplayers = Object.values(data).sort((a, b) => {
       // Tri par statut en ligne (en ligne d'abord)
@@ -387,8 +388,12 @@ app.directive('nickel', [function () {
       }
       
       // Tri par niveau de permission le plus élevé (descendant)
-      const maxPermA = Math.max(...a.roles.map(role => role.permlvl));
-      const maxPermB = Math.max(...b.roles.map(role => role.permlvl));
+      const getMaxPerm = (p) => {
+          const roles = Array.isArray(p.roles) ? p.roles : Object.values(p.roles || {});
+          return roles.length > 0 ? Math.max(...roles.map(r => r.permlvl)) : -1;
+      };
+      const maxPermA = getMaxPerm(a);
+      const maxPermB = getMaxPerm(b);
       
       if (maxPermA !== maxPermB) {
           return maxPermB - maxPermA; // Descendant (les plus hauts niveaux d'abord)
@@ -487,11 +492,14 @@ app.directive('nickel', [function () {
     });
   };
   $scope.getHighestRole = function(roles) {
-    if (roles.length === 0) {
+    if (!roles) return null;
+    const rolesArray = Array.isArray(roles) ? roles : Object.values(roles);
+
+    if (rolesArray.length === 0) {
         return null; // Handle the case where the roles array is empty
     }
   
-    return roles.reduce((highestRole, currentRole) => {
+    return rolesArray.reduce((highestRole, currentRole) => {
         return currentRole.permlvl > highestRole.permlvl ? currentRole : highestRole;
     });
   };
@@ -840,5 +848,3 @@ function registerCustomEvents($scope) {
   function openDiscordLink(){
 	  bngApi.engineLua(`MPCoreNetwork.openURL("https://discord.gg/h5P84FFw7B")`);
   }
-
-
